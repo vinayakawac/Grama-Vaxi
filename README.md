@@ -36,4 +36,4 @@ Detailed documentation for each component can be found in their respective direc
 
 ## License
 
-This project is developed for regional veterinary healthcare optimization.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
