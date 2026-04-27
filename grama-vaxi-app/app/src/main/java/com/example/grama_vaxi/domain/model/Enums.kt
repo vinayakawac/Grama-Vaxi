@@ -5,6 +5,12 @@ enum class AppLanguage {
     ENGLISH
 }
 
+enum class AppTheme {
+    LIGHT,
+    DARK,
+    SYSTEM
+}
+
 enum class UserRole {
     FARMER
 }

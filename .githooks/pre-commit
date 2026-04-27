@@ -1,0 +1,30 @@
+#!/usr/bin/env sh
+set -eu
+
+# Block committing files that commonly contain credentials.
+SENSITIVE_FILE_REGEX='(google-services\.json|GoogleService-Info\.plist|(^|/)\.env(\.|$)|id_rsa(\.pub)?$|\.p12$|\.jks$|\.keystore$|serviceAccount.*\.json$|firebase.*adminsdk.*\.json$)'
+
+if git diff --cached --name-only | grep -E -i "$SENSITIVE_FILE_REGEX" >/dev/null 2>&1; then
+  echo "[secret-scan] Blocked: staged files include sensitive config or key material."
+  echo "[secret-scan] Remove them from index and use secure secret management."
+  git diff --cached --name-only | grep -E -i "$SENSITIVE_FILE_REGEX" || true
+  exit 1
+fi
+
+# Scan added lines in staged changes for obvious secret patterns.
+ADDED_LINES="$(git diff --cached -U0 | grep -E '^\+[^+]' || true)"
+
+if [ -z "$ADDED_LINES" ]; then
+  exit 0
+fi
+
+SECRET_REGEX='(AKIA[0-9A-Z]{16}|AIza[0-9A-Za-z_-]{35}|ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{82}|xox[baprs]-[A-Za-z0-9-]{10,}|-----BEGIN (RSA|EC|OPENSSH|DSA|PRIVATE) KEY-----|sk_live_[A-Za-z0-9]{16,}|sk_test_[A-Za-z0-9]{16,}|(api[_-]?key|access[_-]?key|secret|token|password)[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"']{8,}["'"'"'])'
+
+if printf '%s\n' "$ADDED_LINES" | grep -E -i "$SECRET_REGEX" >/dev/null 2>&1; then
+  echo "[secret-scan] Blocked: possible secret detected in staged changes."
+  echo "[secret-scan] Remove secrets before committing."
+  printf '%s\n' "$ADDED_LINES" | grep -E -i "$SECRET_REGEX" || true
+  exit 1
+fi
+
+exit 0

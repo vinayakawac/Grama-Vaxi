@@ -5,5 +5,6 @@ data class SessionState(
     val userUid: String = "",
     val role: UserRole = UserRole.FARMER,
     val language: AppLanguage = AppLanguage.ENGLISH,
+    val theme: AppTheme = AppTheme.SYSTEM,
     val phoneNumber: String = ""
 )

@@ -12,6 +12,7 @@ object NavRoutes {
     const val VaccineCalendar = "vaccine_calendar"
     const val Notifications = "notifications"
     const val DiseaseReport = "disease_report"
+    const val Profile = "profile"
 
     const val CampAlertPattern = "camp_alert/{alertId}"
     fun campAlert(alertId: String): String = "camp_alert/$alertId"

@@ -3,10 +3,13 @@ package com.example.grama_vaxi.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.grama_vaxi.domain.model.AppLanguage
+import com.example.grama_vaxi.domain.model.AppTheme
 import com.example.grama_vaxi.domain.model.SessionState
 import com.example.grama_vaxi.domain.usecase.ObserveSessionUseCase
 import com.example.grama_vaxi.domain.usecase.SendOtpUseCase
 import com.example.grama_vaxi.domain.usecase.SetLanguageUseCase
+import com.example.grama_vaxi.domain.usecase.SetThemeUseCase
+import com.example.grama_vaxi.domain.usecase.SignOutUseCase
 import com.example.grama_vaxi.domain.usecase.VerifyOtpUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -22,6 +25,8 @@ import kotlinx.coroutines.launch
 class AuthViewModel @Inject constructor(
     observeSessionUseCase: ObserveSessionUseCase,
     private val setLanguageUseCase: SetLanguageUseCase,
+    private val setThemeUseCase: SetThemeUseCase,
+    private val signOutUseCase: SignOutUseCase,
     private val sendOtpUseCase: SendOtpUseCase,
     private val verifyOtpUseCase: VerifyOtpUseCase
 ) : ViewModel() {
@@ -44,6 +49,18 @@ class AuthViewModel @Inject constructor(
     fun selectLanguage(language: AppLanguage) {
         viewModelScope.launch {
             setLanguageUseCase(language)
+        }
+    }
+
+    fun selectTheme(theme: AppTheme) {
+        viewModelScope.launch {
+            setThemeUseCase(theme)
+        }
+    }
+
+    fun signOut() {
+        viewModelScope.launch {
+            signOutUseCase()
         }
     }
 

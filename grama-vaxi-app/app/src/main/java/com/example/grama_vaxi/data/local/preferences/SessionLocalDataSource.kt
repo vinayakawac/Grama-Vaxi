@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.grama_vaxi.domain.model.AppLanguage
+import com.example.grama_vaxi.domain.model.AppTheme
 import com.example.grama_vaxi.domain.model.SessionState
 import com.example.grama_vaxi.domain.model.UserRole
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -30,6 +31,7 @@ class SessionLocalDataSource @Inject constructor(
         val userUid = stringPreferencesKey("user_uid")
         val role = stringPreferencesKey("role")
         val language = stringPreferencesKey("language")
+        val theme = stringPreferencesKey("theme")
         val phone = stringPreferencesKey("phone")
     }
 
@@ -46,6 +48,12 @@ class SessionLocalDataSource @Inject constructor(
     suspend fun setLanguage(language: AppLanguage) {
         context.sessionDataStore.edit { prefs ->
             prefs[Keys.language] = language.name
+        }
+    }
+
+    suspend fun setTheme(theme: AppTheme) {
+        context.sessionDataStore.edit { prefs ->
+            prefs[Keys.theme] = theme.name
         }
     }
 
@@ -79,11 +87,16 @@ class SessionLocalDataSource @Inject constructor(
             ?.let { runCatching { UserRole.valueOf(it) }.getOrNull() }
             ?: UserRole.FARMER
 
+        val theme = preferences[Keys.theme]
+            ?.let { runCatching { AppTheme.valueOf(it) }.getOrNull() }
+            ?: AppTheme.SYSTEM
+
         return SessionState(
             isLoggedIn = preferences[Keys.isLoggedIn] ?: false,
             userUid = preferences[Keys.userUid].orEmpty(),
             role = role,
             language = language,
+            theme = theme,
             phoneNumber = preferences[Keys.phone].orEmpty()
         )
     }

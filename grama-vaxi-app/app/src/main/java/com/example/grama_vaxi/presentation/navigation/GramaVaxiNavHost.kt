@@ -1,5 +1,6 @@
 package com.example.grama_vaxi.presentation.navigation
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Menu
@@ -14,7 +15,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -35,6 +35,7 @@ import com.example.grama_vaxi.presentation.screens.farmer.CampAlertScreen
 import com.example.grama_vaxi.presentation.screens.farmer.DiseaseReportScreen
 import com.example.grama_vaxi.presentation.screens.farmer.HomeDashboardScreen
 import com.example.grama_vaxi.presentation.screens.farmer.NotificationsScreen
+import com.example.grama_vaxi.presentation.screens.farmer.ProfileScreen
 import com.example.grama_vaxi.presentation.screens.farmer.RegisterAnimalScreen
 import com.example.grama_vaxi.presentation.screens.farmer.VaccineCalendarScreen
 import com.example.grama_vaxi.presentation.viewmodel.AnimalLedgerViewModel
@@ -47,9 +48,8 @@ import com.example.grama_vaxi.presentation.viewmodel.RegisterAnimalViewModel
 import com.example.grama_vaxi.presentation.viewmodel.VaccineCalendarViewModel
 
 @Composable
-fun GramaVaxiNavHost() {
+fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
     val navController = rememberNavController()
-    val authViewModel: AuthViewModel = hiltViewModel()
     val authState by authViewModel.uiState.collectAsStateWithLifecycle()
 
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -66,7 +66,9 @@ fun GramaVaxiNavHost() {
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             if (currentRoute in farmerRoutes) {
-                FarmerTopBar()
+                FarmerTopBar(
+                    onProfileClick = { navController.navigate(NavRoutes.Profile) }
+                )
             }
         },
         bottomBar = {
@@ -274,13 +276,27 @@ fun GramaVaxiNavHost() {
                     onMarkRead = viewModel::markRead
                 )
             }
+
+            composable(NavRoutes.Profile) {
+                ProfileScreen(
+                    uiState = authState,
+                    onThemeSelected = authViewModel::selectTheme,
+                    onLogout = {
+                        authViewModel.signOut()
+                        navController.navigate(NavRoutes.Login) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    },
+                    onBack = { navController.popBackStack() }
+                )
+            }
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FarmerTopBar() {
+private fun FarmerTopBar(onProfileClick: () -> Unit) {
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -295,7 +311,7 @@ private fun FarmerTopBar() {
             }
         },
         actions = {
-            IconButton(onClick = {}) {
+            IconButton(onClick = onProfileClick) {
                 Icon(Icons.Rounded.AccountCircle, contentDescription = "Profile")
             }
         },

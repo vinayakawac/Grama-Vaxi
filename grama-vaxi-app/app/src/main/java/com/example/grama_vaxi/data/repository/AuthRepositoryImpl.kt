@@ -2,6 +2,7 @@ package com.example.grama_vaxi.data.repository
 
 import com.example.grama_vaxi.data.local.preferences.SessionLocalDataSource
 import com.example.grama_vaxi.domain.model.AppLanguage
+import com.example.grama_vaxi.domain.model.AppTheme
 import com.example.grama_vaxi.domain.model.SessionState
 import com.example.grama_vaxi.domain.model.UserRole
 import com.example.grama_vaxi.domain.repository.AuthRepository
@@ -22,6 +23,10 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun setLanguage(language: AppLanguage) {
         sessionLocalDataSource.setLanguage(language)
+    }
+
+    override suspend fun setTheme(theme: AppTheme) {
+        sessionLocalDataSource.setTheme(theme)
     }
 
     override suspend fun sendOtp(phoneNumber: String): Result<String> = runCatching {
