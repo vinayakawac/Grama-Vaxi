@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,7 +20,6 @@ import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Pets
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.grama_vaxi.domain.model.Animal
 import com.example.grama_vaxi.presentation.components.AppDimens
+import com.example.grama_vaxi.presentation.components.PrimaryButton
 import com.example.grama_vaxi.presentation.viewmodel.AnimalLedgerUiState
 
 @Composable
@@ -68,9 +67,12 @@ fun AnimalLedgerScreen(
                 .padding(AppDimens.edge),
             horizontalArrangement = Arrangement.End
         ) {
-            FloatingActionButton(onClick = onAddAnimal) {
-                Icon(Icons.Rounded.Add, contentDescription = "Add Animal")
-            }
+            PrimaryButton(
+                text = "Add Animal",
+                onClick = onAddAnimal,
+                icon = Icons.Rounded.Add,
+                height = AppDimens.primaryButtonLarge
+            )
         }
     }
 }
@@ -98,7 +100,7 @@ private fun AnimalLedgerItem(
                     .size(48.dp)
                     .background(
                         color = MaterialTheme.colorScheme.secondaryContainer,
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(AppDimens.radiusMedium)
                     )
                     .padding(10.dp),
                 tint = MaterialTheme.colorScheme.primary

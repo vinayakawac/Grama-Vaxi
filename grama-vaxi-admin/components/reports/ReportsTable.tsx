@@ -17,17 +17,17 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { CheckCircle, Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useState, useMemo } from 'react'
-import { getReports, markReportReviewed, bulkMarkReviewed } from '@/lib/firestore/reports'
+import { getReports } from '@/lib/firestore/reports'
+import { markReportReviewed, bulkMarkReviewed } from '@/app/actions/reportActions'
 import { useFiltersStore } from '@/store/filters'
 import type { DiseaseReport } from '@/types'
-import { DocumentSnapshot } from 'firebase/firestore'
 import { toast } from 'sonner'
 
 export function ReportsTable() {
   const { reportsVillage, reportsStatus, reportsSeverity } = useFiltersStore()
   const [data, setData] = useState<DiseaseReport[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [cursors, setCursors] = useState<Array<DocumentSnapshot | null>>([null])
+  const [cursors, setCursors] = useState<Array<string | null>>([null])
   const [currentPage, setCurrentPage] = useState(0)
   const [hasMore, setHasMore] = useState(false)
   const [selectedRows, setSelectedRows] = useState<Record<string, boolean>>({})
@@ -39,13 +39,13 @@ export function ReportsTable() {
         village: reportsVillage,
         status: reportsStatus,
         severity: reportsSeverity,
-        cursor: cursors[page] || undefined,
+        cursorId: cursors[page] || undefined,
         pageSize: 10,
       })
       setData(result.data)
       setHasMore(result.hasMore)
-      if (result.hasMore && result.lastDoc && cursors.length <= page + 1) {
-        setCursors((prev): Array<DocumentSnapshot | null> => [...prev, result.lastDoc])
+      if (result.hasMore && result.lastDocId && cursors.length <= page + 1) {
+        setCursors((prev): Array<string | null> => [...prev, result.lastDocId])
       }
     } catch (error) {
       toast.error('Failed to fetch reports')
@@ -132,7 +132,7 @@ export function ReportsTable() {
       {
         accessorKey: 'reportedAt',
         header: 'Date',
-        cell: ({ row }) => row.original.reportedAt.toLocaleDateString(),
+        cell: ({ row }) => new Date(row.original.reportedAt).toLocaleDateString(),
       },
       {
         accessorKey: 'severity',

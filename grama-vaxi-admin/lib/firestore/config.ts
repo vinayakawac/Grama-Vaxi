@@ -1,5 +1,6 @@
-import { db } from '@/lib/firebase/client'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
+'use server'
+
+import { adminDb } from '@/lib/firebase/admin'
 import type { NotificationConfig } from '@/types'
 
 const CONFIG_DOC_PATH = 'config/notifications'
@@ -10,10 +11,10 @@ const CONFIG_DOC_PATH = 'config/notifications'
  */
 export async function getNotificationConfig(): Promise<NotificationConfig> {
   try {
-    const configRef = doc(db, CONFIG_DOC_PATH)
-    const snap = await getDoc(configRef)
+    const configRef = adminDb.doc(CONFIG_DOC_PATH)
+    const snap = await configRef.get()
 
-    if (snap.exists()) {
+    if (snap.exists) {
       return snap.data() as NotificationConfig
     }
 
@@ -36,8 +37,8 @@ export async function saveNotificationConfig(
   config: NotificationConfig
 ): Promise<void> {
   try {
-    const configRef = doc(db, CONFIG_DOC_PATH)
-    await setDoc(configRef, config)
+    const configRef = adminDb.doc(CONFIG_DOC_PATH)
+    await configRef.set(config)
   } catch (error) {
     console.error('Error saving notification config:', error)
     throw new Error('Failed to save notification settings')

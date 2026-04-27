@@ -1,45 +1,43 @@
-import { db } from '@/lib/firebase/client'
-import {
-  collection,
-  query,
-  orderBy,
-  limit,
-  startAfter,
-  getDocs,
-  DocumentSnapshot,
-} from 'firebase/firestore'
+'use server'
+
+import { adminDb } from '@/lib/firebase/admin'
 import type { CampAlert, PaginatedResult } from '@/types'
 
 /**
  * Fetches paginated camp alert history from Firestore.
  */
 export async function getCampHistory(filters: {
-  cursor?: DocumentSnapshot
+  cursorId?: string
   pageSize?: number
 }): Promise<PaginatedResult<CampAlert>> {
   try {
     const campsPerPage = filters.pageSize ?? 10
-    let q = query(
-      collection(db, 'camps'),
-      orderBy('createdAt', 'desc'),
-      limit(campsPerPage + 1)
-    )
+    let q: FirebaseFirestore.Query = adminDb
+      .collection('camps')
+      .orderBy('createdAt', 'desc')
+      .limit(campsPerPage + 1)
 
-    if (filters.cursor) {
-      q = query(q, startAfter(filters.cursor))
+    if (filters.cursorId) {
+      const docSnap = await adminDb.collection('camps').doc(filters.cursorId).get()
+      if (docSnap.exists) {
+        q = q.startAfter(docSnap)
+      }
     }
 
-    const snap = await getDocs(q)
-    const data = snap.docs.slice(0, campsPerPage).map((d) => ({
-      id: d.id,
-      ...d.data(),
-      date: d.data().date?.toDate ? d.data().date.toDate() : d.data().date, // Handle both Date and Timestamp
-      createdAt: d.data().createdAt?.toDate(),
-    })) as CampAlert[]
+    const snap = await q.get()
+    const data = snap.docs.slice(0, campsPerPage).map((d) => {
+      const data = d.data()
+      return {
+        id: d.id,
+        ...data,
+        date: data.date?.toDate().toISOString() || new Date().toISOString(),
+        createdAt: data.createdAt?.toDate().toISOString() || new Date().toISOString(),
+      } as CampAlert
+    })
 
     return {
       data,
-      lastDoc: snap.docs[campsPerPage - 1] || null,
+      lastDocId: snap.docs[campsPerPage - 1]?.id || null,
       hasMore: snap.docs.length > campsPerPage,
     }
   } catch (error) {

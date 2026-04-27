@@ -13,7 +13,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.example.grama_vaxi.presentation.components.AnimalTypeSelector
 import com.example.grama_vaxi.presentation.components.AppDimens
 import com.example.grama_vaxi.presentation.components.InputField
@@ -99,7 +98,7 @@ fun RegisterAnimalScreen(
                 text = "Register Animal",
                 onClick = onSubmit,
                 icon = Icons.Rounded.AddCircle,
-                height = 72.dp,
+                height = AppDimens.primaryButtonLarge,
                 enabled = uiState.breed.isNotBlank() && uiState.village.isNotBlank() && !uiState.isSaving
             )
         }

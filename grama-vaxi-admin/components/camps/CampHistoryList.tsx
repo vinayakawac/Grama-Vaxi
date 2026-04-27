@@ -76,7 +76,7 @@ export function CampHistoryList({ refreshTrigger }: CampHistoryListProps) {
                         📅 {new Date(camp.date).toLocaleDateString()} at {camp.time}
                       </span>
                       <span className="flex items-center gap-1">
-                        📤 Sent: {camp.createdAt.toLocaleString()}
+                        📤 Sent: {new Date(camp.createdAt).toLocaleString()}
                       </span>
                     </div>
                   </div>

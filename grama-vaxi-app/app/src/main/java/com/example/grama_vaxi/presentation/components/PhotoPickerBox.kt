@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.PhotoCamera
@@ -37,7 +38,7 @@ fun PhotoPickerBox(
                 shape = RoundedCornerShape(AppDimens.radiusLarge)
             )
             .background(
-                color = MaterialTheme.colorScheme.surfaceContainer,
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
                 shape = RoundedCornerShape(AppDimens.radiusLarge)
             )
             .clickable(onClick = onClick)
@@ -51,6 +52,7 @@ fun PhotoPickerBox(
             Icon(
                 imageVector = Icons.Rounded.PhotoCamera,
                 contentDescription = null,
+                modifier = Modifier.size(36.dp),
                 tint = MaterialTheme.colorScheme.primary
             )
             Text(title, style = MaterialTheme.typography.labelLarge)

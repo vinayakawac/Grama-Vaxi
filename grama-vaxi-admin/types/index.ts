@@ -11,20 +11,20 @@ export interface Animal {
   breed: string
   ageMonths: number
   photoUrl: string
-  nextVaccineDate: Date
+  nextVaccineDate: string
   vaccineStatus: VaccineStatus
-  registeredAt: Date
+  registeredAt: string
 }
 
 export interface CampAlert {
   id: string
   location: string
   village: string
-  date: Date
+  date: string
   time: string
   message: string
   createdBy: string
-  createdAt: Date
+  createdAt: string
   acknowledgedCount: number
 }
 
@@ -38,7 +38,7 @@ export interface DiseaseReport {
   affectedCount: number
   status: ReportStatus
   severity: 'CRITICAL' | 'STANDARD'
-  reportedAt: Date
+  reportedAt: string
 }
 
 export interface NotificationConfig {
@@ -50,7 +50,7 @@ export interface NotificationConfig {
 /** Paginated result wrapper for Firestore cursor-based pagination */
 export interface PaginatedResult<T> {
   data: T[]
-  lastDoc: any | null
+  lastDocId: string | null
   hasMore: boolean
 }
 

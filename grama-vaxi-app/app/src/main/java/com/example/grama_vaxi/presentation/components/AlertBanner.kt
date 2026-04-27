@@ -19,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import com.example.grama_vaxi.domain.model.AlertLevel
 
 @Composable
@@ -65,8 +64,16 @@ fun AlertBanner(
                 tint = iconTint
             )
             Column(verticalArrangement = Arrangement.spacedBy(AppDimens.unit)) {
-                Text(title, style = MaterialTheme.typography.titleSmall, color = Color.Unspecified)
-                Text(description, style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    title,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }

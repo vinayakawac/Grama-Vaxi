@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { useState, useEffect } from 'react'
-import { updateAnimal } from '@/lib/firestore/animals'
+import { updateAnimal } from '@/app/actions/animalActions'
 import { toast } from 'sonner'
 import type { Animal } from '@/types'
 

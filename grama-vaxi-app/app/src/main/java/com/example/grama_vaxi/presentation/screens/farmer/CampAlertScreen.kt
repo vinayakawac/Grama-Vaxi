@@ -3,6 +3,7 @@ package com.example.grama_vaxi.presentation.screens.farmer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.grama_vaxi.domain.model.AlertLevel
@@ -57,7 +59,7 @@ fun CampAlertScreen(
 
         item {
             Card(
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest)
             ) {
                 Column(
                     modifier = Modifier
@@ -73,7 +75,7 @@ fun CampAlertScreen(
         }
 
         item {
-            PrimaryButton(text = "Set Reminder", onClick = onMarkRead)
+            PrimaryButton(text = "Mark as Seen", onClick = onMarkRead)
         }
 
         item {
@@ -88,9 +90,14 @@ private fun RowItem(
     label: String,
     value: String
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Row(
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.spacedBy(AppDimens.unit)
+    ) {
         Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-        Text(label, style = MaterialTheme.typography.labelMedium)
-        Text(value, style = MaterialTheme.typography.bodyLarge)
+        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(label, style = MaterialTheme.typography.labelMedium)
+            Text(value, style = MaterialTheme.typography.bodyLarge)
+        }
     }
 }

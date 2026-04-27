@@ -59,7 +59,10 @@ fun HomeDashboardScreen(
                 title = "Total Animals Registered",
                 value = uiState.totalAnimals.toString(),
                 subtitle = "animals",
-                icon = Icons.Rounded.CrueltyFree
+                icon = Icons.Rounded.CrueltyFree,
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+                iconBadgeColor = MaterialTheme.colorScheme.primary,
+                valueColor = MaterialTheme.colorScheme.primary
             )
         }
 
@@ -68,7 +71,10 @@ fun HomeDashboardScreen(
                 title = "Upcoming Vaccinations",
                 value = uiState.upcomingVaccinations.toString(),
                 subtitle = "scheduled",
-                icon = Icons.Rounded.CalendarMonth
+                icon = Icons.Rounded.CalendarMonth,
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                iconBadgeColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                valueColor = MaterialTheme.colorScheme.onSecondaryContainer
             )
         }
 
@@ -77,7 +83,10 @@ fun HomeDashboardScreen(
                 title = "Alerts",
                 value = uiState.unreadAlerts.toString(),
                 subtitle = "require attention",
-                icon = Icons.Rounded.NotificationsActive
+                icon = Icons.Rounded.NotificationsActive,
+                containerColor = MaterialTheme.colorScheme.errorContainer,
+                iconBadgeColor = MaterialTheme.colorScheme.error,
+                valueColor = MaterialTheme.colorScheme.error
             )
         }
 

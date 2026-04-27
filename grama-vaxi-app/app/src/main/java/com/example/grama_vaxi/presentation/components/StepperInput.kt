@@ -10,9 +10,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -32,9 +33,11 @@ fun StepperInput(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(AppDimens.gutter)
     ) {
-        IconButton(
+        OutlinedButton(
             onClick = { onValueChange((value - 1).coerceAtLeast(min)) },
-            modifier = Modifier.heightIn(min = AppDimens.minTouch)
+            modifier = Modifier
+                .heightIn(min = AppDimens.minTouch),
+            shape = RoundedCornerShape(AppDimens.radiusLarge)
         ) {
             Icon(Icons.Rounded.Remove, contentDescription = "Decrease $label")
         }
@@ -51,12 +54,20 @@ fun StepperInput(
             singleLine = true,
             label = { Text(label) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            shape = RoundedCornerShape(AppDimens.radiusMedium)
+            shape = RoundedCornerShape(AppDimens.radiusLarge),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MaterialTheme.colorScheme.outline,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest
+            )
         )
 
-        IconButton(
+        OutlinedButton(
             onClick = { onValueChange((value + 1).coerceAtMost(max)) },
-            modifier = Modifier.heightIn(min = AppDimens.minTouch)
+            modifier = Modifier
+                .heightIn(min = AppDimens.minTouch),
+            shape = RoundedCornerShape(AppDimens.radiusLarge)
         ) {
             Icon(Icons.Rounded.Add, contentDescription = "Increase $label")
         }

@@ -30,12 +30,16 @@ private val DarkColorScheme = darkColorScheme(
     onSurface = InverseOnSurface,
     surfaceVariant = SurfaceContainer,
     onSurfaceVariant = OutlineVariant,
+    surfaceTint = SurfaceTint,
     error = Error,
     onError = OnError,
     errorContainer = ErrorContainer,
     onErrorContainer = OnErrorContainer,
     outline = Outline,
-    outlineVariant = OutlineVariant
+    outlineVariant = OutlineVariant,
+    inverseSurface = Surface,
+    inverseOnSurface = OnSurface,
+    inversePrimary = InversePrimary
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -57,6 +61,7 @@ private val LightColorScheme = lightColorScheme(
     onSurface = OnSurface,
     surfaceVariant = SurfaceContainerHigh,
     onSurfaceVariant = OnSurfaceVariant,
+    surfaceTint = SurfaceTint,
     error = Error,
     onError = OnError,
     errorContainer = ErrorContainer,
@@ -88,6 +93,7 @@ fun GramaVaxiTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
+        shapes = Shapes,
         content = content
     )
 }

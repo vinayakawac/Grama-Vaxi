@@ -1,6 +1,7 @@
 package com.example.grama_vaxi.presentation.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
@@ -38,10 +39,14 @@ fun PrimaryButton(
             contentColor = MaterialTheme.colorScheme.onPrimary
         )
     ) {
-        if (icon != null) {
-            Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp))
+        androidx.compose.foundation.layout.Row(
+            horizontalArrangement = Arrangement.spacedBy(AppDimens.unit)
+        ) {
+            if (icon != null) {
+                Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp))
+            }
+            Text(text = text, style = MaterialTheme.typography.labelLarge)
         }
-        Text(text = text, style = MaterialTheme.typography.labelLarge)
     }
 }
 
@@ -66,9 +71,13 @@ fun SecondaryButton(
             contentColor = MaterialTheme.colorScheme.primary
         )
     ) {
-        if (icon != null) {
-            Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp))
+        androidx.compose.foundation.layout.Row(
+            horizontalArrangement = Arrangement.spacedBy(AppDimens.unit)
+        ) {
+            if (icon != null) {
+                Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp))
+            }
+            Text(text = text, style = MaterialTheme.typography.labelLarge)
         }
-        Text(text = text, style = MaterialTheme.typography.labelLarge)
     }
 }

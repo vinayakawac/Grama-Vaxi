@@ -17,10 +17,10 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Pencil, Trash2, Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useState, useMemo } from 'react'
-import { getAnimals, deleteAnimal } from '@/lib/firestore/animals'
+import { getAnimals } from '@/lib/firestore/animals'
+import { deleteAnimal } from '@/app/actions/animalActions'
 import { useFiltersStore } from '@/store/filters'
 import type { Animal } from '@/types'
-import { DocumentSnapshot } from 'firebase/firestore'
 import { toast } from 'sonner'
 import { AnimalEditSlideOver } from './AnimalEditSlideOver'
 
@@ -28,7 +28,7 @@ export function AnimalsTable() {
   const { animalsVillage, animalsSpecies, animalsVaccineStatus } = useFiltersStore()
   const [data, setData] = useState<Animal[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [cursors, setCursors] = useState<Array<DocumentSnapshot | null>>([null])
+  const [cursors, setCursors] = useState<Array<string | null>>([null])
   const [currentPage, setCurrentPage] = useState(0)
   const [hasMore, setHasMore] = useState(false)
   
@@ -42,13 +42,13 @@ export function AnimalsTable() {
         village: animalsVillage,
         species: animalsSpecies,
         vaccineStatus: animalsVaccineStatus,
-        cursor: cursors[page] || undefined,
+        cursorId: cursors[page] || undefined,
         pageSize: 10,
       })
       setData(result.data)
       setHasMore(result.hasMore)
-      if (result.hasMore && result.lastDoc && cursors.length <= page + 1) {
-        setCursors((prev): Array<DocumentSnapshot | null> => [...prev, result.lastDoc])
+      if (result.hasMore && result.lastDocId && cursors.length <= page + 1) {
+        setCursors((prev): Array<string | null> => [...prev, result.lastDocId])
       }
     } catch (error) {
       toast.error('Failed to fetch animal records')
@@ -113,7 +113,7 @@ export function AnimalsTable() {
       {
         accessorKey: 'nextVaccineDate',
         header: 'Next Vaccine',
-        cell: ({ row }) => row.original.nextVaccineDate?.toLocaleDateString() || 'N/A',
+        cell: ({ row }) => row.original.nextVaccineDate ? new Date(row.original.nextVaccineDate).toLocaleDateString() : 'N/A',
       },
       {
         accessorKey: 'vaccineStatus',

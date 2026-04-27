@@ -11,8 +11,7 @@ import {
 } from '@/components/ui/select'
 import { PawPrint, Download, RefreshCcw } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { db } from '@/lib/firebase/client'
-import { collection, getDocs } from 'firebase/firestore'
+import { getUniqueVillages } from '@/app/actions/villageActions'
 
 export function AnimalFilters() {
   const {
@@ -30,10 +29,8 @@ export function AnimalFilters() {
   useEffect(() => {
     async function fetchVillages() {
       try {
-        const snap = await getDocs(collection(db, 'animals'))
-        const uniqueVillages = new Set<string>()
-        snap.docs.forEach((doc) => uniqueVillages.add(doc.data().village))
-        setVillages(Array.from(uniqueVillages).sort())
+        const uniqueVillages = await getUniqueVillages()
+        setVillages(uniqueVillages)
       } catch (error) {
         console.error('Error fetching villages:', error)
       }

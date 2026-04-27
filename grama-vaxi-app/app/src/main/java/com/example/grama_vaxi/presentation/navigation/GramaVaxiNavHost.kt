@@ -1,11 +1,22 @@
 package com.example.grama_vaxi.presentation.navigation
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AccountCircle
+import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
@@ -52,6 +63,12 @@ fun GramaVaxiNavHost() {
     )
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            if (currentRoute in farmerRoutes) {
+                FarmerTopBar()
+            }
+        },
         bottomBar = {
             if (currentRoute in farmerRoutes) {
                 FarmerBottomBar(currentRoute = currentRoute) { route ->
@@ -259,4 +276,34 @@ fun GramaVaxiNavHost() {
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FarmerTopBar() {
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                text = "Grama-Vaxi",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = {}) {
+                Icon(Icons.Rounded.Menu, contentDescription = "Menu")
+            }
+        },
+        actions = {
+            IconButton(onClick = {}) {
+                Icon(Icons.Rounded.AccountCircle, contentDescription = "Profile")
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+            titleContentColor = MaterialTheme.colorScheme.primary,
+            navigationIconContentColor = MaterialTheme.colorScheme.primary,
+            actionIconContentColor = MaterialTheme.colorScheme.primary
+        )
+    )
 }

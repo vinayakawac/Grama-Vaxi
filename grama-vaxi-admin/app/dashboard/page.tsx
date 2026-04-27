@@ -82,7 +82,7 @@ export default async function DashboardPage() {
                       <div>
                         <p className="text-sm font-medium">{camp.village}</p>
                         <p className="text-xs text-muted-foreground">
-                          {camp.date.toLocaleDateString()} · {camp.time}
+                          {new Date(camp.date).toLocaleDateString()} · {camp.time}
                         </p>
                       </div>
                       <Badge
@@ -114,7 +114,7 @@ export default async function DashboardPage() {
                       <div>
                         <p className="text-sm font-medium">{report.farmerName}</p>
                         <p className="text-xs text-muted-foreground">
-                          {report.village} · {report.reportedAt.toLocaleDateString()}
+                          {report.village} · {new Date(report.reportedAt).toLocaleDateString()}
                         </p>
                       </div>
                       <Badge
