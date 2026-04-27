@@ -4,6 +4,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -65,7 +66,7 @@ fun GramaVaxiNavHost() {
         NavHost(
             navController = navController,
             startDestination = NavRoutes.Splash,
-            modifier = Modifier
+            modifier = Modifier.padding(innerPadding)
         ) {
             composable(NavRoutes.Splash) {
                 SplashScreen(
