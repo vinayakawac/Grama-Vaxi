@@ -14,5 +14,6 @@ interface AuthRepository {
         verificationToken: String,
         otpCode: String
     ): Result<SessionState>
+    suspend fun signInWithGoogle(idToken: String): Result<SessionState>
     suspend fun signOut()
 }

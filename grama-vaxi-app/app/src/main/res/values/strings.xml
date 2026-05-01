@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Grama-Vaxi</string>
+    <!-- Replace the value below with your actual Web Client ID from Firebase Console -->
+    <string name="default_web_client_id">902931902318-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com</string>
 </resources>

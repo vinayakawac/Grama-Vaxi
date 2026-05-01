@@ -26,9 +26,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.grama_vaxi.domain.model.AppLanguage
-import com.example.grama_vaxi.presentation.screens.auth.LanguageSelectionScreen
 import com.example.grama_vaxi.presentation.screens.auth.LoginScreen
-import com.example.grama_vaxi.presentation.screens.auth.OtpVerificationScreen
 import com.example.grama_vaxi.presentation.screens.auth.SplashScreen
 import com.example.grama_vaxi.presentation.screens.farmer.AnimalLedgerScreen
 import com.example.grama_vaxi.presentation.screens.farmer.CampAlertScreen
@@ -93,7 +91,7 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
                         val destination = if (authState.session.isLoggedIn) {
                             NavRoutes.FarmerHome
                         } else {
-                            NavRoutes.Language
+                            NavRoutes.Login
                         }
                         navController.navigate(destination) {
                             popUpTo(NavRoutes.Splash) { inclusive = true }
@@ -102,28 +100,14 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
                 )
             }
 
-            composable(NavRoutes.Language) {
-                LanguageSelectionScreen(
-                    onKannadaSelected = {
-                        authViewModel.selectLanguage(AppLanguage.KANNADA)
-                        navController.navigate(NavRoutes.Login)
-                    },
-                    onEnglishSelected = {
-                        authViewModel.selectLanguage(AppLanguage.ENGLISH)
-                        navController.navigate(NavRoutes.Login)
-                    }
-                )
-            }
-
             composable(NavRoutes.Login) {
+                val context = androidx.compose.ui.platform.LocalContext.current
                 LoginScreen(
                     uiState = authState,
                     onPhoneChanged = authViewModel::onPhoneChanged,
                     onOtpChanged = authViewModel::onOtpChanged,
                     onSendOtp = {
-                        authViewModel.sendOtp {
-                            navController.navigate(NavRoutes.Otp)
-                        }
+                        authViewModel.sendOtp()
                     },
                     onLogin = {
                         authViewModel.verifyOtp {
@@ -131,16 +115,12 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
                                 popUpTo(NavRoutes.Login) { inclusive = true }
                             }
                         }
-                    }
-                )
-            }
-
-            composable(NavRoutes.Otp) {
-                OtpVerificationScreen(
-                    uiState = authState,
-                    onOtpChanged = authViewModel::onOtpChanged,
-                    onVerify = {
-                        authViewModel.verifyOtp {
+                    },
+                    onGoogleSignIn = {
+                        authViewModel.signInWithGoogle(
+                            context = context,
+                            webClientId = context.getString(com.example.grama_vaxi.R.string.default_web_client_id)
+                        ) {
                             navController.navigate(NavRoutes.FarmerHome) {
                                 popUpTo(NavRoutes.Login) { inclusive = true }
                             }

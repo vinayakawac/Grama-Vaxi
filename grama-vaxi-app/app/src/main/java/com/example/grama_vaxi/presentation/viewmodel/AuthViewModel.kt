@@ -2,6 +2,7 @@ package com.example.grama_vaxi.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import android.content.Context
 import com.example.grama_vaxi.domain.model.AppLanguage
 import com.example.grama_vaxi.domain.model.AppTheme
 import com.example.grama_vaxi.domain.model.SessionState
@@ -9,8 +10,14 @@ import com.example.grama_vaxi.domain.usecase.ObserveSessionUseCase
 import com.example.grama_vaxi.domain.usecase.SendOtpUseCase
 import com.example.grama_vaxi.domain.usecase.SetLanguageUseCase
 import com.example.grama_vaxi.domain.usecase.SetThemeUseCase
+import com.example.grama_vaxi.domain.usecase.SignInWithGoogleUseCase
 import com.example.grama_vaxi.domain.usecase.SignOutUseCase
 import com.example.grama_vaxi.domain.usecase.VerifyOtpUseCase
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialException
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.Job
@@ -28,7 +35,8 @@ class AuthViewModel @Inject constructor(
     private val setThemeUseCase: SetThemeUseCase,
     private val signOutUseCase: SignOutUseCase,
     private val sendOtpUseCase: SendOtpUseCase,
-    private val verifyOtpUseCase: VerifyOtpUseCase
+    private val verifyOtpUseCase: VerifyOtpUseCase,
+    private val signInWithGoogleUseCase: SignInWithGoogleUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
@@ -69,7 +77,7 @@ class AuthViewModel @Inject constructor(
     }
 
     fun onOtpChanged(otp: String) {
-        _uiState.update { it.copy(otp = otp.take(4), errorMessage = null) }
+        _uiState.update { it.copy(otp = otp.take(6), errorMessage = null) }
     }
 
     fun sendOtp(onSent: () -> Unit = {}) {
@@ -78,7 +86,8 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            val result = sendOtpUseCase(_uiState.value.phoneNumber)
+            val phoneE164 = "+91${_uiState.value.phoneNumber}"
+            val result = sendOtpUseCase(phoneE164)
             result.fold(
                 onSuccess = { token ->
                     _uiState.update {
@@ -135,6 +144,65 @@ class AuthViewModel @Inject constructor(
         _uiState.update { it.copy(errorMessage = null) }
     }
 
+    /**
+     * Launch the Credential Manager bottom sheet to get a Google ID token,
+     * then pass it to Firebase for sign-in.
+     * [context] should be an Activity context (use LocalContext.current in Compose).
+     * [webClientId] is the OAuth 2.0 Web Client ID from Firebase / Google Cloud Console.
+     */
+    fun signInWithGoogle(
+        context: Context,
+        webClientId: String,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(googleSignInLoading = true, errorMessage = null) }
+            try {
+                val credentialManager = CredentialManager.create(context)
+                val googleIdOption = GetGoogleIdOption.Builder()
+                    .setFilterByAuthorizedAccounts(false)
+                    .setServerClientId(webClientId)
+                    .build()
+                val request = GetCredentialRequest.Builder()
+                    .addCredentialOption(googleIdOption)
+                    .build()
+                val result = credentialManager.getCredential(context, request)
+                val googleIdToken = GoogleIdTokenCredential
+                    .createFrom(result.credential.data)
+                    .idToken
+                val signInResult = signInWithGoogleUseCase(googleIdToken)
+                signInResult.fold(
+                    onSuccess = {
+                        _uiState.update { it.copy(googleSignInLoading = false) }
+                        onSuccess()
+                    },
+                    onFailure = { e ->
+                        _uiState.update {
+                            it.copy(
+                                googleSignInLoading = false,
+                                errorMessage = e.message ?: "Google sign-in failed"
+                            )
+                        }
+                    }
+                )
+            } catch (e: GetCredentialException) {
+                _uiState.update {
+                    it.copy(
+                        googleSignInLoading = false,
+                        errorMessage = e.message ?: "Google sign-in cancelled"
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        googleSignInLoading = false,
+                        errorMessage = e.message ?: "Google sign-in failed"
+                    )
+                }
+            }
+        }
+    }
+
     private fun startOtpCooldown(seconds: Int = 30) {
         cooldownJob?.cancel()
         cooldownJob = viewModelScope.launch {
@@ -153,5 +221,6 @@ data class AuthUiState(
     val verificationToken: String = "",
     val otpCooldownSeconds: Int = 0,
     val isLoading: Boolean = false,
+    val googleSignInLoading: Boolean = false,
     val errorMessage: String? = null
 )

@@ -8,6 +8,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.grama_vaxi.data.repository.FirebaseActivityHolder
 import com.example.grama_vaxi.domain.model.AppTheme
 import com.example.grama_vaxi.domain.repository.SyncScheduler
 import com.example.grama_vaxi.presentation.navigation.GramaVaxiNavHost
@@ -24,6 +25,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseActivityHolder.activity = this
         syncScheduler.enqueuePeriodicSync()
         enableEdgeToEdge()
         setContent {
@@ -39,6 +41,13 @@ class MainActivity : ComponentActivity() {
             GramaVaxiTheme(darkTheme = darkTheme) {
                 GramaVaxiNavHost(authViewModel = authViewModel)
             }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (FirebaseActivityHolder.activity === this) {
+            FirebaseActivityHolder.activity = null
         }
     }
 }
