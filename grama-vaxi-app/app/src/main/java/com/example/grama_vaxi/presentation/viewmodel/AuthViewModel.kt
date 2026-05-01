@@ -8,10 +8,12 @@ import com.example.grama_vaxi.domain.model.AppTheme
 import com.example.grama_vaxi.domain.model.SessionState
 import com.example.grama_vaxi.domain.usecase.ObserveSessionUseCase
 import com.example.grama_vaxi.domain.usecase.SendOtpUseCase
+import com.example.grama_vaxi.domain.usecase.DeleteAccountUseCase
 import com.example.grama_vaxi.domain.usecase.SetLanguageUseCase
 import com.example.grama_vaxi.domain.usecase.SetThemeUseCase
 import com.example.grama_vaxi.domain.usecase.SignInWithGoogleUseCase
 import com.example.grama_vaxi.domain.usecase.SignOutUseCase
+import com.example.grama_vaxi.domain.usecase.UpdateProfileUseCase
 import com.example.grama_vaxi.domain.usecase.VerifyOtpUseCase
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
@@ -33,7 +35,9 @@ class AuthViewModel @Inject constructor(
     observeSessionUseCase: ObserveSessionUseCase,
     private val setLanguageUseCase: SetLanguageUseCase,
     private val setThemeUseCase: SetThemeUseCase,
+    private val updateProfileUseCase: UpdateProfileUseCase,
     private val signOutUseCase: SignOutUseCase,
+    private val deleteAccountUseCase: DeleteAccountUseCase,
     private val sendOtpUseCase: SendOtpUseCase,
     private val verifyOtpUseCase: VerifyOtpUseCase,
     private val signInWithGoogleUseCase: SignInWithGoogleUseCase
@@ -66,9 +70,36 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    fun updateProfile(
+        userName: String,
+        location: String,
+        email: String,
+        phoneNumber: String,
+        age: String,
+        roleLabel: String
+    ) {
+        viewModelScope.launch {
+            updateProfileUseCase(
+                userName = userName,
+                location = location,
+                email = email,
+                phoneNumber = phoneNumber,
+                age = age,
+                roleLabel = roleLabel
+            )
+        }
+    }
+
     fun signOut() {
         viewModelScope.launch {
             signOutUseCase()
+        }
+    }
+
+    fun deleteAccount(onResult: (Boolean, String?) -> Unit) {
+        viewModelScope.launch {
+            val result = deleteAccountUseCase()
+            onResult(result.isSuccess, result.exceptionOrNull()?.message)
         }
     }
 

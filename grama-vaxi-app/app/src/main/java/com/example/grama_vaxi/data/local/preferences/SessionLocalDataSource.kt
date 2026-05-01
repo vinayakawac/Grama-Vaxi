@@ -30,9 +30,14 @@ class SessionLocalDataSource @Inject constructor(
         val isLoggedIn = booleanPreferencesKey("is_logged_in")
         val userUid = stringPreferencesKey("user_uid")
         val role = stringPreferencesKey("role")
+        val roleLabel = stringPreferencesKey("role_label")
         val language = stringPreferencesKey("language")
         val theme = stringPreferencesKey("theme")
         val phone = stringPreferencesKey("phone")
+        val userName = stringPreferencesKey("user_name")
+        val location = stringPreferencesKey("location")
+        val email = stringPreferencesKey("email")
+        val age = stringPreferencesKey("age")
     }
 
     val sessionFlow: Flow<SessionState> = context.sessionDataStore.data
@@ -60,13 +65,39 @@ class SessionLocalDataSource @Inject constructor(
     suspend fun saveSession(
         uid: String,
         role: UserRole,
-        phoneNumber: String
+        phoneNumber: String,
+        email: String = "",
+        userName: String = ""
     ) {
         context.sessionDataStore.edit { prefs ->
             prefs[Keys.isLoggedIn] = true
             prefs[Keys.userUid] = uid
             prefs[Keys.role] = role.name
             prefs[Keys.phone] = phoneNumber
+            if (email.isNotBlank()) {
+                prefs[Keys.email] = email
+            }
+            if (userName.isNotBlank()) {
+                prefs[Keys.userName] = userName
+            }
+        }
+    }
+
+    suspend fun updateProfile(
+        userName: String,
+        location: String,
+        email: String,
+        phoneNumber: String,
+        age: String,
+        roleLabel: String
+    ) {
+        context.sessionDataStore.edit { prefs ->
+            prefs[Keys.userName] = userName
+            prefs[Keys.location] = location
+            prefs[Keys.email] = email
+            prefs[Keys.phone] = phoneNumber
+            prefs[Keys.age] = age
+            prefs[Keys.roleLabel] = roleLabel
         }
     }
 
@@ -75,6 +106,11 @@ class SessionLocalDataSource @Inject constructor(
             prefs[Keys.isLoggedIn] = false
             prefs[Keys.userUid] = ""
             prefs[Keys.phone] = ""
+            prefs[Keys.userName] = ""
+            prefs[Keys.location] = ""
+            prefs[Keys.email] = ""
+            prefs[Keys.age] = ""
+            prefs[Keys.roleLabel] = ""
         }
     }
 
@@ -95,9 +131,14 @@ class SessionLocalDataSource @Inject constructor(
             isLoggedIn = preferences[Keys.isLoggedIn] ?: false,
             userUid = preferences[Keys.userUid].orEmpty(),
             role = role,
+            roleLabel = preferences[Keys.roleLabel].orEmpty(),
             language = language,
             theme = theme,
-            phoneNumber = preferences[Keys.phone].orEmpty()
+            phoneNumber = preferences[Keys.phone].orEmpty(),
+            userName = preferences[Keys.userName].orEmpty(),
+            location = preferences[Keys.location].orEmpty(),
+            email = preferences[Keys.email].orEmpty(),
+            age = preferences[Keys.age].orEmpty()
         )
     }
 }

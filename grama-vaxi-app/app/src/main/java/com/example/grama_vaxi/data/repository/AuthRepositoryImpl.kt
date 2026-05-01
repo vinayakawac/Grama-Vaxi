@@ -37,6 +37,24 @@ class AuthRepositoryImpl @Inject constructor(
         sessionLocalDataSource.setTheme(theme)
     }
 
+    override suspend fun updateProfile(
+        userName: String,
+        location: String,
+        email: String,
+        phoneNumber: String,
+        age: String,
+        roleLabel: String
+    ) {
+        sessionLocalDataSource.updateProfile(
+            userName = userName,
+            location = location,
+            email = email,
+            phoneNumber = phoneNumber,
+            age = age,
+            roleLabel = roleLabel
+        )
+    }
+
     override suspend fun sendOtp(phoneNumber: String): Result<String> {
         require(phoneNumber.isNotBlank()) { "Phone number must not be blank" }
         val activity = FirebaseActivityHolder.activity
@@ -135,7 +153,9 @@ class AuthRepositoryImpl @Inject constructor(
                         sessionLocalDataSource.saveSession(
                             uid = user.uid,
                             role = UserRole.FARMER,
-                            phoneNumber = user.phoneNumber ?: ""
+                            phoneNumber = user.phoneNumber ?: "",
+                            email = user.email ?: "",
+                            userName = user.displayName ?: ""
                         )
                         cont.resume(Result.success(Pair(SessionState(
                             isLoggedIn = true,
@@ -152,6 +172,27 @@ class AuthRepositoryImpl @Inject constructor(
         firebaseAuth.signOut()
         sessionLocalDataSource.clearSession()
     }
+
+    override suspend fun deleteAccount(): Result<Unit> =
+        suspendCancellableCoroutine { cont ->
+            val user = firebaseAuth.currentUser
+            if (user == null) {
+                cont.resume(Result.failure(IllegalStateException("No signed-in user")))
+                return@suspendCancellableCoroutine
+            }
+
+            user.delete()
+                .addOnSuccessListener {
+                    MainScope().launch {
+                        firebaseAuth.signOut()
+                        sessionLocalDataSource.clearSession()
+                        cont.resume(Result.success(Unit))
+                    }
+                }
+                .addOnFailureListener { e ->
+                    cont.resume(Result.failure(e))
+                }
+        }
 }
 
 object FirebaseActivityHolder {

@@ -10,6 +10,7 @@ import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -22,7 +23,10 @@ import com.example.grama_vaxi.presentation.components.AppDimens
 fun SignUpScreen(
     onRegistrationComplete: () -> Unit
 ) {
-    var name by remember { mutableStateOf("") }
+    val currentUser = FirebaseAuth.getInstance().currentUser
+    val initialName = currentUser?.displayName ?: ""
+    
+    var name by remember { mutableStateOf(initialName) }
     var location by remember { mutableStateOf("") }
 
     Column(

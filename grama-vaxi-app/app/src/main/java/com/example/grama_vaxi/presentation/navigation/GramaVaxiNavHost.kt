@@ -141,15 +141,6 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
                 )
             }
 
-            composable(NavRoutes.SignUp) {
-                com.example.grama_vaxi.presentation.screens.auth.SignUpScreen(
-                    onRegistrationComplete = {
-                        navController.navigate(NavRoutes.FarmerHome) {
-                            popUpTo(NavRoutes.SignUp) { inclusive = true }
-                        }
-                    }
-                )
-            }
 
             composable(NavRoutes.FarmerHome) {
                 val viewModel: HomeViewModel = hiltViewModel()
@@ -282,7 +273,19 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
             composable(NavRoutes.Profile) {
                 ProfileScreen(
                     uiState = authState,
+                    onLanguageSelected = authViewModel::selectLanguage,
                     onThemeSelected = authViewModel::selectTheme,
+                    onSaveProfile = authViewModel::updateProfile,
+                    onDeleteAccount = { onResult ->
+                        authViewModel.deleteAccount { success, message ->
+                            onResult(success, message)
+                            if (success) {
+                                navController.navigate(NavRoutes.Login) {
+                                    popUpTo(0) { inclusive = true }
+                                }
+                            }
+                        }
+                    },
                     onLogout = {
                         authViewModel.signOut()
                         navController.navigate(NavRoutes.Login) {
@@ -306,11 +309,6 @@ private fun FarmerTopBar(onProfileClick: () -> Unit) {
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold
             )
-        },
-        navigationIcon = {
-            IconButton(onClick = {}) {
-                Icon(Icons.Rounded.Menu, contentDescription = "Menu")
-            }
         },
         actions = {
             IconButton(onClick = onProfileClick) {
