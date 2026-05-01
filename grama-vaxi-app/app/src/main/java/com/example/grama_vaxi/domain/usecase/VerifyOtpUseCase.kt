@@ -13,5 +13,5 @@ class VerifyOtpUseCase @Inject constructor(
     suspend operator fun invoke(
         verificationToken: String,
         otpCode: String
-    ): Result<SessionState> = authRepository.verifyOtp(verificationToken, otpCode)
+    ): Result<Pair<SessionState, Boolean>> = authRepository.verifyOtp(verificationToken, otpCode)
 }

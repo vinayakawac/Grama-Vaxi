@@ -13,7 +13,7 @@ interface AuthRepository {
     suspend fun verifyOtp(
         verificationToken: String,
         otpCode: String
-    ): Result<SessionState>
-    suspend fun signInWithGoogle(idToken: String): Result<SessionState>
+    ): Result<Pair<SessionState, Boolean>>
+    suspend fun signInWithGoogle(idToken: String): Result<Pair<SessionState, Boolean>>
     suspend fun signOut()
 }

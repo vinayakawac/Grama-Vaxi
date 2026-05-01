@@ -7,6 +7,6 @@ import javax.inject.Inject
 class SignInWithGoogleUseCase @Inject constructor(
     private val authRepository: AuthRepository
 ) {
-    suspend operator fun invoke(idToken: String): Result<SessionState> =
+    suspend operator fun invoke(idToken: String): Result<Pair<SessionState, Boolean>> =
         authRepository.signInWithGoogle(idToken)
 }

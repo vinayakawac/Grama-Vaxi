@@ -75,7 +75,7 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun verifyOtp(
         verificationToken: String,
         otpCode: String
-    ): Result<SessionState> {
+    ): Result<Pair<SessionState, Boolean>> {
         val credential: PhoneAuthCredential = if (verificationToken.startsWith("auto::")) {
             val autoCode = verificationToken.removePrefix("auto::")
             if (autoCode.isNotBlank()) {
@@ -90,7 +90,7 @@ class AuthRepositoryImpl @Inject constructor(
         return signInWithCredential(credential)
     }
 
-    private suspend fun signInWithCredential(credential: PhoneAuthCredential): Result<SessionState> =
+    private suspend fun signInWithCredential(credential: PhoneAuthCredential): Result<Pair<SessionState, Boolean>> =
         suspendCancellableCoroutine { cont ->
             firebaseAuth.signInWithCredential(credential)
                 .addOnSuccessListener { result ->
@@ -99,6 +99,7 @@ class AuthRepositoryImpl @Inject constructor(
                         cont.resume(Result.failure(IllegalStateException("Sign-in succeeded but user is null")))
                         return@addOnSuccessListener
                     }
+                    val isNewUser = result.additionalUserInfo?.isNewUser ?: false
                     MainScope().launch {
                         sessionLocalDataSource.saveSession(
                             uid = user.uid,
@@ -111,7 +112,7 @@ class AuthRepositoryImpl @Inject constructor(
                             role = UserRole.FARMER,
                             phoneNumber = user.phoneNumber ?: ""
                         )
-                        cont.resume(Result.success(session))
+                        cont.resume(Result.success(Pair(session, isNewUser)))
                     }
                 }
                 .addOnFailureListener { e ->
@@ -119,7 +120,7 @@ class AuthRepositoryImpl @Inject constructor(
                 }
         }
 
-    override suspend fun signInWithGoogle(idToken: String): Result<SessionState> =
+    override suspend fun signInWithGoogle(idToken: String): Result<Pair<SessionState, Boolean>> =
         suspendCancellableCoroutine { cont ->
             val credential = GoogleAuthProvider.getCredential(idToken, null)
             firebaseAuth.signInWithCredential(credential)
@@ -129,18 +130,19 @@ class AuthRepositoryImpl @Inject constructor(
                         cont.resume(Result.failure(IllegalStateException("Google sign-in: user is null")))
                         return@addOnSuccessListener
                     }
+                    val isNewUser = authResult.additionalUserInfo?.isNewUser ?: false
                     MainScope().launch {
                         sessionLocalDataSource.saveSession(
                             uid = user.uid,
                             role = UserRole.FARMER,
                             phoneNumber = user.phoneNumber ?: ""
                         )
-                        cont.resume(Result.success(SessionState(
+                        cont.resume(Result.success(Pair(SessionState(
                             isLoggedIn = true,
                             userUid = user.uid,
                             role = UserRole.FARMER,
                             phoneNumber = user.phoneNumber ?: ""
-                        )))
+                        ), isNewUser)))
                     }
                 }
                 .addOnFailureListener { e -> cont.resume(Result.failure(e)) }

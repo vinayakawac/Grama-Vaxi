@@ -110,8 +110,9 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
                         authViewModel.sendOtp()
                     },
                     onLogin = {
-                        authViewModel.verifyOtp {
-                            navController.navigate(NavRoutes.FarmerHome) {
+                        authViewModel.verifyOtp { isNewUser ->
+                            val route = if (isNewUser) NavRoutes.SignUp else NavRoutes.FarmerHome
+                            navController.navigate(route) {
                                 popUpTo(NavRoutes.Login) { inclusive = true }
                             }
                         }
@@ -120,10 +121,31 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
                         authViewModel.signInWithGoogle(
                             context = context,
                             webClientId = context.getString(com.example.grama_vaxi.R.string.default_web_client_id)
-                        ) {
-                            navController.navigate(NavRoutes.FarmerHome) {
+                        ) { isNewUser ->
+                            val route = if (isNewUser) NavRoutes.SignUp else NavRoutes.FarmerHome
+                            navController.navigate(route) {
                                 popUpTo(NavRoutes.Login) { inclusive = true }
                             }
+                        }
+                    }
+                )
+            }
+
+            composable(NavRoutes.SignUp) {
+                com.example.grama_vaxi.presentation.screens.auth.SignUpScreen(
+                    onRegistrationComplete = {
+                        navController.navigate(NavRoutes.FarmerHome) {
+                            popUpTo(NavRoutes.SignUp) { inclusive = true }
+                        }
+                    }
+                )
+            }
+
+            composable(NavRoutes.SignUp) {
+                com.example.grama_vaxi.presentation.screens.auth.SignUpScreen(
+                    onRegistrationComplete = {
+                        navController.navigate(NavRoutes.FarmerHome) {
+                            popUpTo(NavRoutes.SignUp) { inclusive = true }
                         }
                     }
                 )

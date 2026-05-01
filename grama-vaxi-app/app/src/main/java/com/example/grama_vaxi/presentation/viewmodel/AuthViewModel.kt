@@ -111,7 +111,7 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun verifyOtp(onSuccess: () -> Unit) {
+    fun verifyOtp(onSuccess: (Boolean) -> Unit) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             val state = _uiState.value
@@ -122,11 +122,12 @@ class AuthViewModel @Inject constructor(
             )
 
             result.fold(
-                onSuccess = {
+                onSuccess = { resultPair ->
+                    val (_, isNewUser) = resultPair
                     _uiState.update {
                         it.copy(isLoading = false)
                     }
-                    onSuccess()
+                    onSuccess(isNewUser)
                 },
                 onFailure = { throwable ->
                     _uiState.update {
@@ -153,7 +154,7 @@ class AuthViewModel @Inject constructor(
     fun signInWithGoogle(
         context: Context,
         webClientId: String,
-        onSuccess: () -> Unit
+        onSuccess: (Boolean) -> Unit
     ) {
         viewModelScope.launch {
             _uiState.update { it.copy(googleSignInLoading = true, errorMessage = null) }
@@ -172,9 +173,10 @@ class AuthViewModel @Inject constructor(
                     .idToken
                 val signInResult = signInWithGoogleUseCase(googleIdToken)
                 signInResult.fold(
-                    onSuccess = {
+                    onSuccess = { resultPair ->
+                        val (_, isNewUser) = resultPair
                         _uiState.update { it.copy(googleSignInLoading = false) }
-                        onSuccess()
+                        onSuccess(isNewUser)
                     },
                     onFailure = { e ->
                         _uiState.update {

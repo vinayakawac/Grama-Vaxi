@@ -5,6 +5,7 @@ object NavRoutes {
     const val Language = "language"
     const val Login = "login"
     const val Otp = "otp"
+    const val SignUp = "sign_up"
 
     const val FarmerHome = "farmer_home"
     const val AnimalLedger = "animal_ledger"
