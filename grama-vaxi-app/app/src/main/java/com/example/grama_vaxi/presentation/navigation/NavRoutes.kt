@@ -14,6 +14,12 @@ object NavRoutes {
     const val Notifications = "notifications"
     const val DiseaseReport = "disease_report"
     const val Profile = "profile"
+    const val EditProfile = "edit_profile"
+    const val ThemeSettings = "theme_settings"
+    const val LanguageSettings = "language_settings"
+    const val NotificationSettings = "notification_settings"
+    const val AppPermissions = "app_permissions"
+    const val TermsConditions = "terms_conditions"
 
     const val CampAlertPattern = "camp_alert/{alertId}"
     fun campAlert(alertId: String): String = "camp_alert/$alertId"

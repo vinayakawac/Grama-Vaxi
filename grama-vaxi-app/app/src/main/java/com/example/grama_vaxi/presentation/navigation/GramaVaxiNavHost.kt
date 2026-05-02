@@ -29,12 +29,18 @@ import com.example.grama_vaxi.domain.model.AppLanguage
 import com.example.grama_vaxi.presentation.screens.auth.LoginScreen
 import com.example.grama_vaxi.presentation.screens.auth.SplashScreen
 import com.example.grama_vaxi.presentation.screens.farmer.AnimalLedgerScreen
+import com.example.grama_vaxi.presentation.screens.farmer.AppPermissionsScreen
 import com.example.grama_vaxi.presentation.screens.farmer.CampAlertScreen
 import com.example.grama_vaxi.presentation.screens.farmer.DiseaseReportScreen
+import com.example.grama_vaxi.presentation.screens.farmer.EditProfileScreen
 import com.example.grama_vaxi.presentation.screens.farmer.HomeDashboardScreen
+import com.example.grama_vaxi.presentation.screens.farmer.LanguageSettingsScreen
+import com.example.grama_vaxi.presentation.screens.farmer.NotificationSettingsScreen
 import com.example.grama_vaxi.presentation.screens.farmer.NotificationsScreen
 import com.example.grama_vaxi.presentation.screens.farmer.ProfileScreen
 import com.example.grama_vaxi.presentation.screens.farmer.RegisterAnimalScreen
+import com.example.grama_vaxi.presentation.screens.farmer.TermsAndConditionsScreen
+import com.example.grama_vaxi.presentation.screens.farmer.ThemeSettingsScreen
 import com.example.grama_vaxi.presentation.screens.farmer.VaccineCalendarScreen
 import com.example.grama_vaxi.presentation.viewmodel.AnimalLedgerViewModel
 import com.example.grama_vaxi.presentation.viewmodel.AuthViewModel
@@ -227,6 +233,58 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
                 )
             }
 
+            composable(NavRoutes.EditProfile) {
+                EditProfileScreen(
+                    uiState = authState,
+                    onSaveProfile = authViewModel::updateProfile,
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
+            composable(NavRoutes.ThemeSettings) {
+                ThemeSettingsScreen(
+                    currentTheme = authState.session.theme,
+                    onThemeSelected = authViewModel::selectTheme,
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
+            composable(NavRoutes.LanguageSettings) {
+                LanguageSettingsScreen(
+                    currentLanguage = authState.session.language,
+                    onLanguageSelected = authViewModel::selectLanguage,
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
+            composable(NavRoutes.NotificationSettings) {
+                NotificationSettingsScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
+            composable(NavRoutes.AppPermissions) {
+                AppPermissionsScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
+            composable(NavRoutes.TermsConditions) {
+                TermsAndConditionsScreen(
+                    onDeleteAccount = { onResult ->
+                        authViewModel.deleteAccount { success, message ->
+                            onResult(success, message)
+                            if (success) {
+                                navController.navigate(NavRoutes.Login) {
+                                    popUpTo(0) { inclusive = true }
+                                }
+                            }
+                        }
+                    },
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
             composable(NavRoutes.DiseaseReport) {
                 val viewModel: DiseaseReportViewModel = hiltViewModel()
                 val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -273,19 +331,13 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
             composable(NavRoutes.Profile) {
                 ProfileScreen(
                     uiState = authState,
-                    onLanguageSelected = authViewModel::selectLanguage,
-                    onThemeSelected = authViewModel::selectTheme,
-                    onSaveProfile = authViewModel::updateProfile,
-                    onDeleteAccount = { onResult ->
-                        authViewModel.deleteAccount { success, message ->
-                            onResult(success, message)
-                            if (success) {
-                                navController.navigate(NavRoutes.Login) {
-                                    popUpTo(0) { inclusive = true }
-                                }
-                            }
-                        }
-                    },
+                    onEditProfile = { navController.navigate(NavRoutes.EditProfile) },
+                    onOpenNotifications = { navController.navigate(NavRoutes.Notifications) },
+                    onOpenNotificationSettings = { navController.navigate(NavRoutes.NotificationSettings) },
+                    onOpenAppPermissions = { navController.navigate(NavRoutes.AppPermissions) },
+                    onOpenTerms = { navController.navigate(NavRoutes.TermsConditions) },
+                    onOpenTheme = { navController.navigate(NavRoutes.ThemeSettings) },
+                    onOpenLanguage = { navController.navigate(NavRoutes.LanguageSettings) },
                     onLogout = {
                         authViewModel.signOut()
                         navController.navigate(NavRoutes.Login) {
