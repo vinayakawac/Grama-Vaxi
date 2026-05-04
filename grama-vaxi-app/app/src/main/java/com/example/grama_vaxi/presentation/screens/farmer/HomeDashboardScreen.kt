@@ -32,7 +32,9 @@ fun HomeDashboardScreen(
     uiState: HomeUiState,
     onRegisterAnimal: () -> Unit,
     onViewCalendar: () -> Unit,
-    onReportDisease: () -> Unit
+    onReportDisease: () -> Unit,
+    onOpenLedger: () -> Unit,
+    onOpenAlerts: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -62,7 +64,8 @@ fun HomeDashboardScreen(
                 icon = Icons.Rounded.CrueltyFree,
                 containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
                 iconBadgeColor = MaterialTheme.colorScheme.primary,
-                valueColor = MaterialTheme.colorScheme.primary
+                valueColor = MaterialTheme.colorScheme.primary,
+                onClick = onOpenLedger
             )
         }
 
@@ -74,7 +77,8 @@ fun HomeDashboardScreen(
                 icon = Icons.Rounded.CalendarMonth,
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 iconBadgeColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                valueColor = MaterialTheme.colorScheme.onSecondaryContainer
+                valueColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                onClick = onViewCalendar
             )
         }
 
@@ -86,7 +90,8 @@ fun HomeDashboardScreen(
                 icon = Icons.Rounded.NotificationsActive,
                 containerColor = MaterialTheme.colorScheme.errorContainer,
                 iconBadgeColor = MaterialTheme.colorScheme.error,
-                valueColor = MaterialTheme.colorScheme.error
+                valueColor = MaterialTheme.colorScheme.error,
+                onClick = onOpenAlerts
             )
         }
 

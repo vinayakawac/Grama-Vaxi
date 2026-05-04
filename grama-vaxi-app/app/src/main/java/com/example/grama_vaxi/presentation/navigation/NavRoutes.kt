@@ -23,4 +23,7 @@ object NavRoutes {
 
     const val CampAlertPattern = "camp_alert/{alertId}"
     fun campAlert(alertId: String): String = "camp_alert/$alertId"
+
+    const val AnimalDetailPattern = "animal_detail/{animalId}"
+    fun animalDetail(animalId: String): String = "animal_detail/$animalId"
 }

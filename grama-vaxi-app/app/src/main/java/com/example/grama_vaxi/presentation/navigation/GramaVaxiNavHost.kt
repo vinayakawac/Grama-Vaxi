@@ -28,6 +28,7 @@ import androidx.navigation.navArgument
 import com.example.grama_vaxi.domain.model.AppLanguage
 import com.example.grama_vaxi.presentation.screens.auth.LoginScreen
 import com.example.grama_vaxi.presentation.screens.auth.SplashScreen
+import com.example.grama_vaxi.presentation.screens.farmer.AnimalDetailScreen
 import com.example.grama_vaxi.presentation.screens.farmer.AnimalLedgerScreen
 import com.example.grama_vaxi.presentation.screens.farmer.AppPermissionsScreen
 import com.example.grama_vaxi.presentation.screens.farmer.CampAlertScreen
@@ -42,6 +43,7 @@ import com.example.grama_vaxi.presentation.screens.farmer.RegisterAnimalScreen
 import com.example.grama_vaxi.presentation.screens.farmer.TermsAndConditionsScreen
 import com.example.grama_vaxi.presentation.screens.farmer.ThemeSettingsScreen
 import com.example.grama_vaxi.presentation.screens.farmer.VaccineCalendarScreen
+import com.example.grama_vaxi.presentation.viewmodel.AnimalDetailViewModel
 import com.example.grama_vaxi.presentation.viewmodel.AnimalLedgerViewModel
 import com.example.grama_vaxi.presentation.viewmodel.AuthViewModel
 import com.example.grama_vaxi.presentation.viewmodel.CampAlertViewModel
@@ -162,7 +164,9 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
                     uiState = uiState,
                     onRegisterAnimal = { navController.navigate(NavRoutes.RegisterAnimal) },
                     onViewCalendar = { navController.navigate(NavRoutes.VaccineCalendar) },
-                    onReportDisease = { navController.navigate(NavRoutes.DiseaseReport) }
+                    onReportDisease = { navController.navigate(NavRoutes.DiseaseReport) },
+                    onOpenLedger = { navController.navigate(NavRoutes.AnimalLedger) },
+                    onOpenAlerts = { navController.navigate(NavRoutes.Notifications) }
                 )
             }
 
@@ -179,7 +183,8 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
                 AnimalLedgerScreen(
                     uiState = uiState,
                     onAddAnimal = { navController.navigate(NavRoutes.RegisterAnimal) },
-                    onDeleteAnimal = viewModel::deleteAnimal
+                    onDeleteAnimal = viewModel::deleteAnimal,
+                    onOpenAnimal = { animalId -> navController.navigate(NavRoutes.animalDetail(animalId)) }
                 )
             }
 
@@ -229,7 +234,8 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
                 NotificationsScreen(
                     uiState = uiState,
                     onMarkRead = viewModel::markAsRead,
-                    onOpenAlert = { alertId -> navController.navigate(NavRoutes.campAlert(alertId)) }
+                    onOpenAlert = { alertId -> navController.navigate(NavRoutes.campAlert(alertId)) },
+                    onOpenVaccine = { animalId -> navController.navigate(NavRoutes.animalDetail(animalId)) }
                 )
             }
 
@@ -325,6 +331,24 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
                 CampAlertScreen(
                     alert = uiState.alert,
                     onMarkRead = viewModel::markRead
+                )
+            }
+
+            composable(
+                route = NavRoutes.AnimalDetailPattern,
+                arguments = listOf(navArgument("animalId") { type = NavType.StringType })
+            ) { entry ->
+                val animalId = entry.arguments?.getString("animalId").orEmpty()
+                val viewModel: AnimalDetailViewModel = hiltViewModel()
+                val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+                LaunchedEffect(animalId, authState.session.userUid) {
+                    viewModel.loadAnimal(authState.session.userUid, animalId)
+                }
+
+                AnimalDetailScreen(
+                    uiState = uiState,
+                    onBack = { navController.popBackStack() }
                 )
             }
 

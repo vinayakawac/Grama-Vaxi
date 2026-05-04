@@ -37,7 +37,8 @@ import com.example.grama_vaxi.presentation.viewmodel.AnimalLedgerUiState
 fun AnimalLedgerScreen(
     uiState: AnimalLedgerUiState,
     onAddAnimal: () -> Unit,
-    onDeleteAnimal: (String) -> Unit
+    onDeleteAnimal: (String) -> Unit,
+    onOpenAnimal: (String) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
@@ -56,7 +57,8 @@ fun AnimalLedgerScreen(
             items(uiState.animals) { animal ->
                 AnimalLedgerItem(
                     animal = animal,
-                    onDelete = { onDeleteAnimal(animal.id) }
+                    onDelete = { onDeleteAnimal(animal.id) },
+                    onOpen = { onOpenAnimal(animal.id) }
                 )
             }
         }
@@ -80,7 +82,8 @@ fun AnimalLedgerScreen(
 @Composable
 private fun AnimalLedgerItem(
     animal: Animal,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onOpen: () -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(AppDimens.radiusLarge),
@@ -89,6 +92,7 @@ private fun AnimalLedgerItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .clickable { onOpen() }
                 .padding(AppDimens.gutter),
             horizontalArrangement = Arrangement.spacedBy(AppDimens.gutter),
             verticalAlignment = Alignment.CenterVertically
