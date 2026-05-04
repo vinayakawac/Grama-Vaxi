@@ -104,6 +104,26 @@ firebase-debug.log*
 *service-account*.json
 *serviceAccount*.json
 *firebase-adminsdk*.json
+client_secret*.json
+credentials*.json
+secrets.json
+secret.json
+
+# Certificates and Keys
+*.key
+*.p12
+*.cert
+*.crt
+*.rsa
+*.dsa
+id_rsa
+id_rsa.pub
+
+# General secrets
+*.secret
+*.secrets
+auth.json
+.npmrc
 
 # vercel
 .vercel

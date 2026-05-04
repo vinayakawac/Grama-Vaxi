@@ -1,9 +1,8 @@
 import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
+import { getAdminSessionFromCookies } from '@/lib/auth/session'
 
 export default async function RootPage() {
-  const cookieStore = await cookies()
-  const session = cookieStore.get('firebase-session')
+  const session = await getAdminSessionFromCookies()
 
   if (session) {
     redirect('/dashboard')

@@ -2,33 +2,83 @@
 
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { MapPin, Loader2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { MapPin, Loader2, RotateCcw } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
 import { getCampHistory } from '@/lib/firestore/camps'
 import type { CampAlert } from '@/types'
+import { toast } from 'sonner'
 
 interface CampHistoryListProps {
   refreshTrigger: number
 }
 
+function dispatchTone(status: CampAlert['dispatchStatus']) {
+  switch (status) {
+    case 'SENT':
+      return 'bg-emerald-50 text-emerald-700'
+    case 'PARTIAL':
+      return 'bg-amber-50 text-amber-700'
+    case 'NO_RECIPIENTS':
+      return 'bg-slate-100 text-slate-700'
+    case 'SKIPPED_DISABLED':
+      return 'bg-zinc-100 text-zinc-700'
+    default:
+      return 'bg-blue-50 text-blue-700'
+  }
+}
+
 export function CampHistoryList({ refreshTrigger }: CampHistoryListProps) {
   const [history, setHistory] = useState<CampAlert[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [retryingCampId, setRetryingCampId] = useState<string | null>(null)
+
+  const fetchHistory = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      const result = await getCampHistory({ pageSize: 10 })
+      setHistory(result.data)
+    } catch (error) {
+      console.error('Error fetching history:', error)
+      toast.error('Failed to load camp history')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  const canRetry = (status: CampAlert['dispatchStatus']) =>
+    status === 'PARTIAL' ||
+    status === 'NO_RECIPIENTS' ||
+    status === 'SKIPPED_DISABLED'
+
+  const handleRetry = async (campId: string) => {
+    setRetryingCampId(campId)
+    try {
+      const response = await fetch('/api/camps/retry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ campId }),
+      })
+
+      const payload = await response.json().catch(() => ({}))
+      if (!response.ok) {
+        throw new Error(payload?.error || 'Retry failed')
+      }
+
+      toast.success(`Retry completed: ${payload.dispatchStatus ?? 'SENT'}`)
+      await fetchHistory()
+    } catch (error) {
+      console.error('Retry failed:', error)
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to retry camp alert'
+      )
+    } finally {
+      setRetryingCampId(null)
+    }
+  }
 
   useEffect(() => {
-    async function fetchHistory() {
-      setIsLoading(true)
-      try {
-        const result = await getCampHistory({ pageSize: 10 })
-        setHistory(result.data)
-      } catch (error) {
-        console.error('Error fetching history:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
     fetchHistory()
-  }, [refreshTrigger])
+  }, [refreshTrigger, fetchHistory])
 
   if (isLoading) {
     return (
@@ -78,14 +128,40 @@ export function CampHistoryList({ refreshTrigger }: CampHistoryListProps) {
                       <span className="flex items-center gap-1">
                         📤 Sent: {new Date(camp.createdAt).toLocaleString()}
                       </span>
+                      <span>
+                        Delivery: {camp.deliveredCount ?? 0} success · {camp.failedCount ?? 0} failed
+                      </span>
                     </div>
                   </div>
-                  <Badge
-                    variant="secondary"
-                    className="bg-grama-50 text-grama-800"
-                  >
-                    {camp.acknowledgedCount} ack
-                  </Badge>
+                  <div className="flex flex-col items-end gap-2">
+                    <Badge
+                      variant="secondary"
+                      className={dispatchTone(camp.dispatchStatus)}
+                    >
+                      {camp.dispatchStatus ?? 'QUEUED'}
+                    </Badge>
+                    <Badge
+                      variant="secondary"
+                      className="bg-grama-50 text-grama-800"
+                    >
+                      {camp.acknowledgedCount} ack
+                    </Badge>
+                    {canRetry(camp.dispatchStatus) && (
+                      <button
+                        type="button"
+                        onClick={() => handleRetry(camp.id)}
+                        disabled={retryingCampId === camp.id}
+                        className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {retryingCampId === camp.id ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <RotateCcw className="h-3 w-3" />
+                        )}
+                        Retry
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

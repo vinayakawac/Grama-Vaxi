@@ -14,6 +14,64 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == ownerUid;
     }
 
+    function isSelf(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function userMutableKeys() {
+      return [
+        'name',
+        'phone',
+        'village',
+        'fcmToken',
+        'fcmTokens',
+        'lastTokenUpdatedAt',
+        'updatedAt'
+      ];
+    }
+
+    function validUserSelfCreate(data) {
+      return data.keys().hasOnly(userMutableKeys().concat(['role']))
+        && (!data.keys().hasAny(['role']) || data.role == 'farmer');
+    }
+
+    function validUserSelfUpdate() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(userMutableKeys());
+    }
+
+    function validNotificationTokenData(data) {
+      return data.keys().hasOnly([
+          'uid',
+          'token',
+          'village',
+          'platform',
+          'enabled',
+          'updatedAt',
+          'lastError'
+        ])
+        && data.uid is string
+        && data.uid == request.auth.uid
+        && data.token is string
+        && data.token.size() > 0
+        && data.village is string
+        && data.village.size() > 0
+        && data.enabled is bool;
+    }
+
+    match /users/{userId} {
+      allow read: if isAdmin() || isSelf(userId);
+      allow create: if isAdmin() || (isSelf(userId) && validUserSelfCreate(request.resource.data));
+      allow update: if isAdmin() || (isSelf(userId) && validUserSelfUpdate());
+      allow delete: if isAdmin();
+    }
+
+    match /notificationTokens/{tokenId} {
+      allow read: if isAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid);
+      allow create: if isSignedIn() && validNotificationTokenData(request.resource.data);
+      allow update: if isSignedIn() && resource.data.uid == request.auth.uid && validNotificationTokenData(request.resource.data);
+      allow delete: if isAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid);
+    }
+
     match /animals/{animalId} {
       allow read: if isAdmin() || isOwner(resource.data.ownerUid);
       allow create: if isSignedIn() && request.resource.data.ownerUid == request.auth.uid;

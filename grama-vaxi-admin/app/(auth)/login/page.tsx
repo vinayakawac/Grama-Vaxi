@@ -1,7 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ShieldCheck, Phone, KeyRound, ArrowRight, Loader2 } from 'lucide-react'
+import {
+  ConfirmationResult,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+} from 'firebase/auth'
+import { clientAuth } from '@/lib/firebase/client'
 
 type LoginStep = 'phone' | 'otp' | 'verifying'
 
@@ -10,6 +16,38 @@ export default function LoginPage() {
   const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState('')
   const [error, setError] = useState('')
+  const recaptchaRef = useRef<RecaptchaVerifier | null>(null)
+  const confirmationRef = useRef<ConfirmationResult | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (recaptchaRef.current) {
+        recaptchaRef.current.clear()
+        recaptchaRef.current = null
+      }
+    }
+  }, [])
+
+  const ensureRecaptcha = () => {
+    if (recaptchaRef.current) {
+      return recaptchaRef.current
+    }
+
+    recaptchaRef.current = new RecaptchaVerifier(clientAuth, 'recaptcha-container', {
+      size: 'normal',
+    })
+    return recaptchaRef.current
+  }
+
+  const formatPhoneNumber = (rawPhone: string) => {
+    const trimmed = rawPhone.trim()
+    if (trimmed.startsWith('+')) {
+      return trimmed
+    }
+
+    const localDigits = trimmed.replace(/\D/g, '')
+    return `+91${localDigits}`
+  }
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -20,9 +58,22 @@ export default function LoginPage() {
       return
     }
 
-    // TODO: Integrate Firebase signInWithPhoneNumber
-    // For now, advance to OTP step
-    setStep('otp')
+    try {
+      const verifier = ensureRecaptcha()
+      const confirmation = await signInWithPhoneNumber(
+        clientAuth,
+        formatPhoneNumber(phone),
+        verifier
+      )
+
+      confirmationRef.current = confirmation
+      setStep('otp')
+    } catch (authError) {
+      console.error('Error sending OTP:', authError)
+      setError('Failed to send OTP. Please try again.')
+      recaptchaRef.current?.clear()
+      recaptchaRef.current = null
+    }
   }
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
@@ -34,15 +85,41 @@ export default function LoginPage() {
       return
     }
 
+    if (!confirmationRef.current) {
+      setError('OTP session expired. Please request a new code.')
+      setStep('phone')
+      return
+    }
+
     setStep('verifying')
 
-    // TODO: Verify OTP with Firebase, check admin role, set session cookie
-    // Simulate verification delay
-    setTimeout(() => {
-      // For development: set a session cookie and redirect
-      document.cookie = 'firebase-session=dev-session; path=/'
+    try {
+      const userCredential = await confirmationRef.current.confirm(otp)
+      const idToken = await userCredential.user.getIdToken(true)
+
+      const sessionRes = await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken }),
+      })
+
+      if (!sessionRes.ok) {
+        const payload = await sessionRes.json().catch(() => null)
+        const errorMessage =
+          payload?.error || 'Your account does not have admin access.'
+        throw new Error(errorMessage)
+      }
+
       window.location.href = '/dashboard'
-    }, 1500)
+    } catch (verifyError) {
+      console.error('Error verifying OTP:', verifyError)
+      setError(
+        verifyError instanceof Error
+          ? verifyError.message
+          : 'Verification failed. Please try again.'
+      )
+      setStep('otp')
+    }
   }
 
   return (
@@ -107,7 +184,9 @@ export default function LoginPage() {
                     id="phone-input"
                     type="tel"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onChange={(e) =>
+                      setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))
+                    }
                     placeholder="Enter 10-digit number"
                     className="h-11 w-full rounded-lg border border-input bg-background pl-10 pr-4 text-sm outline-none transition-colors focus:border-grama focus:ring-2 focus:ring-grama/20"
                     maxLength={10}
@@ -121,7 +200,7 @@ export default function LoginPage() {
                 Send OTP
                 <ArrowRight className="h-4 w-4" />
               </button>
-              <div id="recaptcha-container" />
+              <div id="recaptcha-container" className="pt-2" />
             </form>
           )}
 

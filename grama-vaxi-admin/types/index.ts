@@ -18,7 +18,7 @@ export interface Animal {
 
 export interface CampAlert {
   id: string
-  location: string
+  location?: string
   village: string
   date: string
   time: string
@@ -26,6 +26,10 @@ export interface CampAlert {
   createdBy: string
   createdAt: string
   acknowledgedCount: number
+  dispatchStatus?: 'QUEUED' | 'SENT' | 'PARTIAL' | 'NO_RECIPIENTS' | 'SKIPPED_DISABLED'
+  deliveredCount?: number
+  failedCount?: number
+  dispatchedAt?: string
 }
 
 export interface DiseaseReport {

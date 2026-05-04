@@ -2,6 +2,7 @@ package com.example.grama_vaxi.data.repository
 
 import android.app.Activity
 import com.example.grama_vaxi.data.local.preferences.SessionLocalDataSource
+import com.example.grama_vaxi.data.remote.notifications.NotificationTokenSyncManager
 import com.example.grama_vaxi.domain.model.AppLanguage
 import com.example.grama_vaxi.domain.model.AppTheme
 import com.example.grama_vaxi.domain.model.SessionState
@@ -24,7 +25,8 @@ import kotlin.coroutines.resume
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
     private val sessionLocalDataSource: SessionLocalDataSource,
-    private val firebaseAuth: FirebaseAuth
+    private val firebaseAuth: FirebaseAuth,
+    private val notificationTokenSyncManager: NotificationTokenSyncManager
 ) : AuthRepository {
 
     override fun sessionState(): Flow<SessionState> = sessionLocalDataSource.sessionFlow
@@ -169,6 +171,7 @@ class AuthRepositoryImpl @Inject constructor(
         }
 
     override suspend fun signOut() {
+        notificationTokenSyncManager.unregisterCurrentToken()
         firebaseAuth.signOut()
         sessionLocalDataSource.clearSession()
     }

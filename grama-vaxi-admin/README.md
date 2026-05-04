@@ -37,7 +37,8 @@ The Grama-Vaxi Admin Dashboard is a high-performance web platform designed for v
 *   **Data Handling**: TanStack Table (Data Grids) & Recharts (Analytics)
 *   **Backend Integration**:
     *   **Firebase Admin SDK**: Secure server-side access to Firestore and FCM.
-    *   **Firebase Client SDK**: Real-time client-side synchronization for the dashboard views.
+    *   **Firebase Client SDK**: Phone OTP sign-in flow in admin login.
+    *   **Next.js API Routes**: Direct server-side camp alert dispatch without Cloud Functions.
 
 ---
 
@@ -56,9 +57,22 @@ The Grama-Vaxi Admin Dashboard is a high-performance web platform designed for v
 The application requires the following environment variables in `.env.local`:
 
 *   `NEXT_PUBLIC_FIREBASE_*`: Client-side Firebase configuration.
-*   `FIREBASE_PROJECT_ID`: Service account credentials for Admin SDK.
-*   `FIREBASE_CLIENT_EMAIL`: Service account credentials for Admin SDK.
-*   `FIREBASE_PRIVATE_KEY`: Service account credentials for Admin SDK.
+*   `FIREBASE_ADMIN_PROJECT_ID`: Service account credentials for Admin SDK.
+*   `FIREBASE_ADMIN_CLIENT_EMAIL`: Service account credentials for Admin SDK.
+*   `FIREBASE_ADMIN_PRIVATE_KEY`: Service account credentials for Admin SDK.
+
+## Notification Flow
+
+1. Admin creates a camp alert from `/dashboard/camps`.
+2. API writes a `camps` document and immediately sends FCM multicast to recipients from `notificationTokens`.
+3. API writes per-user `alerts` docs and updates dispatch counters (`deliveredCount`, `failedCount`).
+4. Invalid device tokens are auto-disabled.
+
+## Security Notes
+
+*   Admin routes require a verified Firebase session cookie (`firebase-session`).
+*   Session cookies are created only after OTP login and admin role validation.
+*   Firestore rules now permit owner-scoped writes to `users/{uid}` and `notificationTokens/{id}` while preserving admin-only access elsewhere.
 
 ---
 

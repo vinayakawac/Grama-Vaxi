@@ -11,12 +11,17 @@ android {
     namespace = "com.example.grama_vaxi"
     compileSdk = 36
 
+    val adminApiBaseUrl: String = (project.findProperty("GRAMA_VAXI_ADMIN_API_BASE_URL") as? String)
+        ?: ""
+
     defaultConfig {
         applicationId = "com.example.grama_vaxi"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
+
+        buildConfigField("String", "ADMIN_API_BASE_URL", "\"$adminApiBaseUrl\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -76,6 +81,7 @@ dependencies {
     implementation(libs.firebase.storage.ktx)
     implementation(libs.firebase.messaging.ktx)
     implementation(libs.firebase.analytics)
+    implementation("org.json:json:20240303")
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)
