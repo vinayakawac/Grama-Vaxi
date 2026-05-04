@@ -15,7 +15,29 @@ async function isAdminUser(uid: string, adminClaim?: unknown): Promise<boolean> 
 
 export async function POST(req: NextRequest) {
   try {
-    const { idToken } = await req.json()
+    const { idToken, email, password, isPrototypeLogin } = await req.json()
+
+    // Handle hardcoded prototype login
+    if (isPrototypeLogin) {
+      if (email === 'vinayakawac@gmail.com' && password === '1234567890') {
+        const response = NextResponse.json({ success: true })
+        response.cookies.set({
+          name: FIREBASE_SESSION_COOKIE,
+          value: 'prototype-hardcoded-session',
+          maxAge: Math.floor(SESSION_DURATION_MS / 1000),
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/',
+        })
+        return response
+      } else {
+        return NextResponse.json(
+          { success: false, error: 'Invalid credentials' },
+          { status: 401 }
+        )
+      }
+    }
 
     if (!idToken || typeof idToken !== 'string') {
       return NextResponse.json(

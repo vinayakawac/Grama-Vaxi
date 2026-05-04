@@ -24,6 +24,15 @@ export async function verifyAdminSessionCookie(
 ): Promise<AdminSession | null> {
   if (!sessionCookie) return null
 
+  // Bypass for prototype
+  if (sessionCookie === 'prototype-hardcoded-session') {
+    return {
+      uid: 'prototype-admin-uid',
+      email: 'vinayakawac@gmail.com',
+      phoneNumber: '+911234567890'
+    }
+  }
+
   try {
     const decoded = await adminAuth.verifySessionCookie(sessionCookie, true)
     const isAdmin = await hasAdminAccess(decoded.uid, decoded.admin)
