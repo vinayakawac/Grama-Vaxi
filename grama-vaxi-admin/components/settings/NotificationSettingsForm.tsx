@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Settings, Bell, Clock, Save, Loader2 } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { getNotificationConfig, saveNotificationConfig } from '@/lib/firestore/config'
+import { saveNotificationConfig } from '@/lib/firestore/config'
 import { toast } from 'sonner'
 import type { NotificationConfig } from '@/types'
 
@@ -16,7 +16,9 @@ export function NotificationSettingsForm() {
   useEffect(() => {
     async function fetchConfig() {
       try {
-        const data = await getNotificationConfig()
+        const response = await fetch('/api/config')
+        if (!response.ok) throw new Error('Failed to fetch')
+        const data = await response.json()
         setConfig(data)
       } catch (error) {
         toast.error('Failed to load settings')

@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/select'
 import { FileWarning, Download, RefreshCcw } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { getUniqueVillages } from '@/app/actions/villageActions'
+
 
 export function ReportFilters() {
   const {
@@ -29,8 +29,11 @@ export function ReportFilters() {
   useEffect(() => {
     async function fetchVillages() {
       try {
-        const uniqueVillages = await getUniqueVillages()
-        setVillages(uniqueVillages)
+        const response = await fetch('/api/villages')
+        if (response.ok) {
+          const uniqueVillages = await response.json()
+          setVillages(uniqueVillages)
+        }
       } catch (error) {
         console.error('Error fetching villages:', error)
       }

@@ -4,7 +4,6 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { MapPin, Loader2, RotateCcw } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
-import { getCampHistory } from '@/lib/firestore/camps'
 import type { CampAlert } from '@/types'
 import { toast } from 'sonner'
 
@@ -35,7 +34,9 @@ export function CampHistoryList({ refreshTrigger }: CampHistoryListProps) {
   const fetchHistory = useCallback(async () => {
     setIsLoading(true)
     try {
-      const result = await getCampHistory({ pageSize: 10 })
+      const response = await fetch('/api/camps/history?pageSize=10')
+      if (!response.ok) throw new Error('Failed to fetch')
+      const result = await response.json()
       setHistory(result.data)
     } catch (error) {
       console.error('Error fetching history:', error)

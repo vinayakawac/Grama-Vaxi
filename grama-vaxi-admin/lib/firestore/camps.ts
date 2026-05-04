@@ -1,4 +1,3 @@
-'use server'
 
 import { adminDb } from '@/lib/firebase/admin'
 import type { CampAlert, PaginatedResult } from '@/types'

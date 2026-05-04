@@ -17,7 +17,6 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Pencil, Trash2, Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useState, useMemo } from 'react'
-import { getAnimals } from '@/lib/firestore/animals'
 import { deleteAnimal } from '@/app/actions/animalActions'
 import { useFiltersStore } from '@/store/filters'
 import type { Animal } from '@/types'
@@ -38,13 +37,17 @@ export function AnimalsTable() {
   const fetchAnimals = async (page: number) => {
     setIsLoading(true)
     try {
-      const result = await getAnimals({
-        village: animalsVillage,
-        species: animalsSpecies,
-        vaccineStatus: animalsVaccineStatus,
-        cursorId: cursors[page] || undefined,
-        pageSize: 10,
-      })
+      const params = new URLSearchParams()
+      if (animalsVillage) params.append('village', animalsVillage)
+      if (animalsSpecies) params.append('species', animalsSpecies)
+      if (animalsVaccineStatus) params.append('vaccineStatus', animalsVaccineStatus)
+      if (cursors[page]) params.append('cursorId', cursors[page]!)
+      params.append('pageSize', '10')
+
+      const response = await fetch(`/api/animals?${params.toString()}`)
+      if (!response.ok) throw new Error('Failed to fetch')
+      const result = await response.json()
+
       setData(result.data)
       setHasMore(result.hasMore)
       if (result.hasMore && result.lastDocId && cursors.length <= page + 1) {

@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { getUniqueVillages } from '@/app/actions/villageActions'
+
 
 const campAlertSchema = z.object({
   village: z.string().min(1, 'Village is required'),
@@ -61,8 +61,11 @@ export function CampAlertForm({ onSuccess, onValuesChange }: CampAlertFormProps)
   useEffect(() => {
     async function fetchVillages() {
       try {
-        const uniqueVillages = await getUniqueVillages()
-        setVillages(uniqueVillages)
+        const response = await fetch('/api/villages')
+        if (response.ok) {
+          const uniqueVillages = await response.json()
+          setVillages(uniqueVillages)
+        }
       } catch (error) {
         console.error('Error fetching villages:', error)
       }

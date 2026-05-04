@@ -17,7 +17,6 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { CheckCircle, Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useState, useMemo } from 'react'
-import { getReports } from '@/lib/firestore/reports'
 import { markReportReviewed, bulkMarkReviewed } from '@/app/actions/reportActions'
 import { useFiltersStore } from '@/store/filters'
 import type { DiseaseReport } from '@/types'
@@ -35,13 +34,17 @@ export function ReportsTable() {
   const fetchReports = async (page: number) => {
     setIsLoading(true)
     try {
-      const result = await getReports({
-        village: reportsVillage,
-        status: reportsStatus,
-        severity: reportsSeverity,
-        cursorId: cursors[page] || undefined,
-        pageSize: 10,
-      })
+      const params = new URLSearchParams()
+      if (reportsVillage) params.append('village', reportsVillage)
+      if (reportsStatus) params.append('status', reportsStatus)
+      if (reportsSeverity) params.append('severity', reportsSeverity)
+      if (cursors[page]) params.append('cursorId', cursors[page]!)
+      params.append('pageSize', '10')
+
+      const response = await fetch(`/api/reports?${params.toString()}`)
+      if (!response.ok) throw new Error('Failed to fetch')
+      const result = await response.json()
+
       setData(result.data)
       setHasMore(result.hasMore)
       if (result.hasMore && result.lastDocId && cursors.length <= page + 1) {
