@@ -30,14 +30,14 @@
     <string name="terms_and_conditions">Terms &amp; Conditions</string>
     <string name="effective_date">Effective date: May 2, 2026</string>
     <string name="terms_agreement">By using Grama-Vaxi you agree to the terms below.</string>
-    <string name="terms_list">1. Use responsibly: Use the app to record and monitor livestock health data accurately.\n2. Data ownership: You own the data you submit. We use it to provide services and alerts.\n3. Notifications: Alerts are informational and do not replace professional veterinary advice.\n4. Account security: Keep your device and login details secure.\n5. Account deletion: When you delete your account, your login credentials and app access are removed immediately and permanently.\n6. Service changes: Features may change to improve reliability and performance.</string>
+    <string name="terms_list">1. Use responsibly: Use the app to record and monitor livestock health data accurately.\n2. Data ownership: You own the data you submit. We use it to provide services and alerts.\n3. Notifications: Alerts are informational and do not replace professional veterinary advice.\n4. Account security: Keep your device and login details secure.\n5. Account deletion: When you request deletion, your login credentials and app access are removed immediately. Your farm records will be permanently deleted after a 15-day grace period.\n6. Service changes: Features may change to improve reliability and performance.</string>
     <string name="delete_account">Delete Account</string>
-    <string name="delete_account_desc">Deleting your account will permanently remove your login credentials and all access to Grama-Vaxi immediately. This action cannot be undone.</string>
+    <string name="delete_account_desc">Requesting account deletion will remove your login credentials immediately. Your data will be purged after 15 days.</string>
     <string name="delete_my_account">Delete my account</string>
     <string name="deleting_account">Deleting account…</string>
     <string name="failed_delete">Failed to delete account</string>
     <string name="delete_account_q">Delete account?</string>
-    <string name="delete_account_dialog_desc">Your login credentials and app access will be removed immediately. You will be signed out and will not be able to log back in.</string>
+    <string name="delete_account_dialog_desc">Your login credentials and app access will be removed immediately. You will be signed out. Your data will be held for 15 days before final deletion.</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
     <string name="back">Back</string>
@@ -110,6 +110,8 @@
     <string name="welcome_provide_details">Welcome! Please provide some basic details.</string>
     <string name="full_name">Full Name</string>
     <string name="village_location">Village / Location</string>
+    <string name="phone_number">Number</string>
+    <string name="verify_phone_later">You can verify the number later</string>
     <string name="complete_registration">Complete Registration</string>
     
     <string name="verification">Verification</string>

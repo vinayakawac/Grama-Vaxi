@@ -11,6 +11,6 @@ object DateUtils {
 
     fun epochDayToDisplay(epochDay: Long): String {
         val millis = TimeUnit.DAYS.toMillis(epochDay)
-        return SimpleDateFormat("dd MMM", Locale.getDefault()).format(Date(millis))
+        return SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(millis))
     }
 }

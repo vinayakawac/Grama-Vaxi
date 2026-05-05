@@ -22,6 +22,7 @@ import { useFiltersStore } from '@/store/filters'
 import type { Animal } from '@/types'
 import { toast } from 'sonner'
 import { AnimalEditSlideOver } from './AnimalEditSlideOver'
+import { formatDate } from '@/lib/dateUtils'
 
 export function AnimalsTable() {
   const { animalsVillage, animalsSpecies, animalsVaccineStatus } = useFiltersStore()
@@ -121,7 +122,7 @@ export function AnimalsTable() {
       {
         accessorKey: 'nextVaccineDate',
         header: 'Next Vaccine',
-        cell: ({ row }) => row.original.nextVaccineDate ? new Date(row.original.nextVaccineDate).toLocaleDateString() : 'N/A',
+        cell: ({ row }) => formatDate(row.original.nextVaccineDate),
       },
       {
         accessorKey: 'vaccineStatus',

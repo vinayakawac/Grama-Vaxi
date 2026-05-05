@@ -6,6 +6,7 @@ import { MapPin, Loader2, RotateCcw, Trash2 } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import type { CampAlert } from '@/types'
 import { toast } from 'sonner'
+import { formatDate } from '@/lib/dateUtils'
 
 interface CampHistoryListProps {
   refreshTrigger: number
@@ -157,10 +158,10 @@ export function CampHistoryList({ refreshTrigger }: CampHistoryListProps) {
                     </p>
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-muted-foreground">
                       <span className="flex items-center gap-1">
-                        📅 {new Date(camp.date).toLocaleDateString()} at {camp.time}
+                        📅 {formatDate(camp.date)} at {camp.time}
                       </span>
                       <span className="flex items-center gap-1">
-                        📤 Sent: {new Date(camp.createdAt).toLocaleString()}
+                        📤 Sent: {formatDate(camp.createdAt)}
                       </span>
                       <span>
                         Delivery: {camp.deliveredCount ?? 0} success · {camp.failedCount ?? 0} failed

@@ -8,6 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import com.google.firebase.auth.FirebaseAuth
@@ -20,16 +21,21 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.grama_vaxi.presentation.components.AppDimens
+import com.example.grama_vaxi.presentation.viewmodel.AuthViewModel
 
 @Composable
 fun SignUpScreen(
+    authViewModel: AuthViewModel,
     onRegistrationComplete: () -> Unit
 ) {
     val currentUser = FirebaseAuth.getInstance().currentUser
     val initialName = currentUser?.displayName ?: ""
-    
+    val initialPhone = currentUser?.phoneNumber ?: ""
+    val initialEmail = currentUser?.email ?: ""
+
     var name by remember { mutableStateOf(initialName) }
     var location by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf(initialPhone) }
 
     Column(
         modifier = Modifier
@@ -80,6 +86,22 @@ fun SignUpScreen(
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
+            shape = RoundedCornerShape(AppDimens.radiusLarge)
+        )
+
+        // Phone Field
+        OutlinedTextField(
+            value = phone,
+            onValueChange = { phone = it.take(10) },
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text(stringResource(R.string.phone_number)) },
+            leadingIcon = { Icon(Icons.Rounded.Phone, contentDescription = null) },
+            supportingText = { Text(stringResource(R.string.verify_phone_later)) },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Phone,
                 imeAction = ImeAction.Done
             ),
             shape = RoundedCornerShape(AppDimens.radiusLarge)
@@ -88,7 +110,17 @@ fun SignUpScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = onRegistrationComplete,
+            onClick = {
+                authViewModel.updateProfile(
+                    userName = name,
+                    location = location,
+                    email = initialEmail,
+                    phoneNumber = phone,
+                    age = "", // Default empty as per requirement
+                    roleLabel = "Farmer" // Default role
+                )
+                onRegistrationComplete()
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(AppDimens.minTouch),

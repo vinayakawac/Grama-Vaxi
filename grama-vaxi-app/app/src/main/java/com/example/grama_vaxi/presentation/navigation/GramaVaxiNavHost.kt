@@ -27,6 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.grama_vaxi.domain.model.AppLanguage
 import com.example.grama_vaxi.presentation.screens.auth.LoginScreen
+import com.example.grama_vaxi.presentation.screens.auth.OnboardingLanguageScreen
 import com.example.grama_vaxi.presentation.screens.auth.SplashScreen
 import com.example.grama_vaxi.presentation.screens.farmer.AnimalDetailScreen
 import com.example.grama_vaxi.presentation.screens.farmer.AnimalLedgerScreen
@@ -119,7 +120,7 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
                     },
                     onLogin = {
                         authViewModel.verifyOtp { isNewUser ->
-                            val route = if (isNewUser) NavRoutes.SignUp else NavRoutes.FarmerHome
+                            val route = if (isNewUser) NavRoutes.OnboardingLanguage else NavRoutes.FarmerHome
                             navController.navigate(route) {
                                 popUpTo(NavRoutes.Login) { inclusive = true }
                             }
@@ -130,7 +131,7 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
                             context = context,
                             webClientId = context.getString(com.example.grama_vaxi.R.string.default_web_client_id)
                         ) { isNewUser ->
-                            val route = if (isNewUser) NavRoutes.SignUp else NavRoutes.FarmerHome
+                            val route = if (isNewUser) NavRoutes.OnboardingLanguage else NavRoutes.FarmerHome
                             navController.navigate(route) {
                                 popUpTo(NavRoutes.Login) { inclusive = true }
                             }
@@ -139,8 +140,21 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
                 )
             }
 
+            composable(NavRoutes.OnboardingLanguage) {
+                OnboardingLanguageScreen(
+                    currentLanguage = authState.session.language,
+                    onLanguageSelected = authViewModel::selectLanguage,
+                    onNext = {
+                        navController.navigate(NavRoutes.SignUp) {
+                            popUpTo(NavRoutes.OnboardingLanguage) { inclusive = true }
+                        }
+                    }
+                )
+            }
+
             composable(NavRoutes.SignUp) {
                 com.example.grama_vaxi.presentation.screens.auth.SignUpScreen(
+                    authViewModel = authViewModel,
                     onRegistrationComplete = {
                         navController.navigate(NavRoutes.FarmerHome) {
                             popUpTo(NavRoutes.SignUp) { inclusive = true }

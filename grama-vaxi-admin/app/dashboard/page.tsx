@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { CoverageChart } from '@/components/dashboard/CoverageChart'
 import { getDashboardStats, getCoverageData, getRecentActivity } from '@/lib/firestore/dashboard'
+import { formatDate } from '@/lib/dateUtils'
 
 export const dynamic = 'force-dynamic'
 
@@ -82,7 +83,7 @@ export default async function DashboardPage() {
                       <div>
                         <p className="text-sm font-medium">{camp.village}</p>
                         <p className="text-xs text-muted-foreground">
-                          {new Date(camp.date).toLocaleDateString()} · {camp.time}
+                          {formatDate(camp.date)} · {camp.time}
                         </p>
                       </div>
                       <Badge
@@ -114,7 +115,7 @@ export default async function DashboardPage() {
                       <div>
                         <p className="text-sm font-medium">{report.farmerName}</p>
                         <p className="text-xs text-muted-foreground">
-                          {report.village} · {new Date(report.reportedAt).toLocaleDateString()}
+                          {report.village} · {formatDate(report.reportedAt)}
                         </p>
                       </div>
                       <Badge

@@ -25,6 +25,7 @@ import {
 import { useFiltersStore } from '@/store/filters'
 import type { DiseaseReport } from '@/types'
 import { toast } from 'sonner'
+import { formatDate } from '@/lib/dateUtils'
 
 export function ReportsTable() {
   const { reportsVillage, reportsStatus, reportsSeverity } = useFiltersStore()
@@ -155,7 +156,7 @@ export function ReportsTable() {
       {
         accessorKey: 'reportedAt',
         header: 'Date',
-        cell: ({ row }) => new Date(row.original.reportedAt).toLocaleDateString(),
+        cell: ({ row }) => formatDate(row.original.reportedAt),
       },
       {
         accessorKey: 'severity',

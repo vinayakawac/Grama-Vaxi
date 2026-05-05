@@ -3,6 +3,7 @@ package com.example.grama_vaxi.presentation.navigation
 object NavRoutes {
     const val Splash = "splash"
     const val Language = "language"
+    const val OnboardingLanguage = "onboarding_language"
     const val Login = "login"
     const val Otp = "otp"
     const val SignUp = "sign_up"
