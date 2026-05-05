@@ -44,3 +44,22 @@ export async function getCampHistory(filters: {
     throw new Error('Failed to fetch camp alert history')
   }
 }
+
+/**
+ * Deletes a camp alert by id from Firestore.
+ */
+export async function deleteCampAlert(campId: string): Promise<void> {
+  try {
+    const campRef = adminDb.collection('camps').doc(campId)
+    const campSnap = await campRef.get()
+
+    if (!campSnap.exists) {
+      throw new Error('Camp not found')
+    }
+
+    await campRef.delete()
+  } catch (error) {
+    console.error('Error deleting camp alert:', error)
+    throw error
+  }
+}

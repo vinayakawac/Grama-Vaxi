@@ -2,7 +2,7 @@
 
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { MapPin, Loader2, RotateCcw } from 'lucide-react'
+import { MapPin, Loader2, RotateCcw, Trash2 } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import type { CampAlert } from '@/types'
 import { toast } from 'sonner'
@@ -30,6 +30,7 @@ export function CampHistoryList({ refreshTrigger }: CampHistoryListProps) {
   const [history, setHistory] = useState<CampAlert[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [retryingCampId, setRetryingCampId] = useState<string | null>(null)
+  const [deletingCampId, setDeletingCampId] = useState<string | null>(null)
 
   const fetchHistory = useCallback(async () => {
     setIsLoading(true)
@@ -74,6 +75,38 @@ export function CampHistoryList({ refreshTrigger }: CampHistoryListProps) {
       )
     } finally {
       setRetryingCampId(null)
+    }
+  }
+
+  const handleDelete = async (campId: string, village: string) => {
+    const shouldDelete = window.confirm(
+      `Delete this alert for ${village}? This action cannot be undone.`
+    )
+
+    if (!shouldDelete) {
+      return
+    }
+
+    setDeletingCampId(campId)
+    try {
+      const response = await fetch('/api/camps/history', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ campId }),
+      })
+
+      const payload = await response.json().catch(() => ({}))
+      if (!response.ok) {
+        throw new Error(payload?.error || 'Delete failed')
+      }
+
+      toast.success('Alert deleted')
+      await fetchHistory()
+    } catch (error) {
+      console.error('Delete failed:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to delete alert')
+    } finally {
+      setDeletingCampId(null)
     }
   }
 
@@ -162,6 +195,19 @@ export function CampHistoryList({ refreshTrigger }: CampHistoryListProps) {
                         Retry
                       </button>
                     )}
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(camp.id, camp.village)}
+                      disabled={deletingCampId === camp.id}
+                      className="inline-flex items-center gap-1 rounded-md border border-destructive/20 px-2 py-1 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {deletingCampId === camp.id ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-3 w-3" />
+                      )}
+                      Delete
+                    </button>
                   </div>
                 </div>
               </div>

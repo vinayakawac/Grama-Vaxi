@@ -1,6 +1,6 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Megaphone, Send, Loader2 } from 'lucide-react'
@@ -40,7 +40,7 @@ export function CampAlertForm({ onSuccess, onValuesChange }: CampAlertFormProps)
     register,
     handleSubmit,
     setValue,
-    watch,
+    control,
     formState: { errors },
   } = useForm<CampAlertFormValues>({
     resolver: zodResolver(campAlertSchema),
@@ -52,11 +52,20 @@ export function CampAlertForm({ onSuccess, onValuesChange }: CampAlertFormProps)
     },
   })
 
-  // Watch form values for live preview
-  const formValues = watch()
+  // Watch individual fields to avoid render loops caused by object identity changes.
+  const village = useWatch({ control, name: 'village' })
+  const date = useWatch({ control, name: 'date' })
+  const time = useWatch({ control, name: 'time' })
+  const message = useWatch({ control, name: 'message' })
+
   useEffect(() => {
-    onValuesChange(formValues)
-  }, [formValues, onValuesChange])
+    onValuesChange({
+      village: village ?? '',
+      date: date ?? '',
+      time: time ?? '',
+      message: message ?? '',
+    })
+  }, [village, date, time, message, onValuesChange])
 
   useEffect(() => {
     async function fetchVillages() {
