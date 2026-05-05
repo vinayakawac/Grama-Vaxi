@@ -139,6 +139,7 @@ class FirebaseRemoteDataSource @Inject constructor(
     }
 
     private fun resolveVaccineStatus(nextVaccineEpochDay: Long): String {
+        if (nextVaccineEpochDay <= 0) return "UP_TO_DATE"
         val todayEpochDay = TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())
         return when {
             nextVaccineEpochDay < todayEpochDay -> "OVERDUE"

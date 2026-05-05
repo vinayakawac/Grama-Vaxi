@@ -159,5 +159,6 @@
     <string name="classify_symptoms">Classify Symptoms</string>
     <string name="submit_report">Submit Report</string>
 
+    <string name="not_scheduled">Not scheduled</string>
     <string name="default_web_client_id">902931902318-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com</string>
 </resources>

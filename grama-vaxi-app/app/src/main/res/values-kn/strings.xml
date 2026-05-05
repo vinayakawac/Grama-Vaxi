@@ -160,5 +160,6 @@
     <string name="classify_symptoms">ರೋಗಲಕ್ಷಣಗಳನ್ನು ವರ್ಗೀಕರಿಸಿ</string>
     <string name="submit_report">ವರದಿ ಸಲ್ಲಿಸಿ</string>
 
+    <string name="not_scheduled">ನಿಗದಿಯಾಗಿಲ್ಲ</string>
     <string name="default_web_client_id">902931902318-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com</string>
 </resources>

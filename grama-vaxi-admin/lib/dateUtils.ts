@@ -3,7 +3,7 @@
  * Requested format: dd/mm/yyyy
  */
 export function formatDate(date: Date | string | number | null | undefined): string {
-  if (!date) return 'N/A'
+  if (!date || (typeof date === 'number' && date === 0)) return 'Not scheduled'
   
   const d = new Date(date)
   if (isNaN(d.getTime())) return 'N/A'

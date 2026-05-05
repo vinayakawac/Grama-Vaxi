@@ -26,7 +26,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.grama_vaxi.R
 import com.example.grama_vaxi.presentation.components.AppDimens
 import com.example.grama_vaxi.presentation.viewmodel.AnimalDetailUiState
 import com.example.grama_vaxi.utils.DateUtils
@@ -147,7 +149,11 @@ fun AnimalDetailScreen(
                             color = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                         Text(
-                            DateUtils.epochDayToDisplay(animal.nextVaccineEpochDay),
+                            if (animal.nextVaccineEpochDay > 0) {
+                                DateUtils.epochDayToDisplay(animal.nextVaccineEpochDay)
+                            } else {
+                                stringResource(R.string.not_scheduled)
+                            },
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSecondaryContainer
                         )

@@ -64,7 +64,7 @@ class RegisterAnimalViewModel @Inject constructor(
                 ageMonths = state.ageMonths,
                 village = state.village.ifBlank { "Temple Square" },
                 photoUri = state.photoUri,
-                nextVaccineEpochDay = DateUtils.currentEpochDayUtc() + nextVaccineIntervalDays(state.type)
+                nextVaccineEpochDay = 0L // Disabled auto-scheduling as per user request
             )
 
             val result = registerAnimalUseCase(animal)
@@ -89,12 +89,6 @@ class RegisterAnimalViewModel @Inject constructor(
         AnimalType.COW -> "Gauri"
         AnimalType.GOAT -> "Raju"
         AnimalType.SHEEP -> "Chandi"
-    }
-
-    private fun nextVaccineIntervalDays(type: AnimalType): Long = when (type) {
-        AnimalType.COW -> 120L
-        AnimalType.GOAT -> 90L
-        AnimalType.SHEEP -> 100L
     }
 }
 
