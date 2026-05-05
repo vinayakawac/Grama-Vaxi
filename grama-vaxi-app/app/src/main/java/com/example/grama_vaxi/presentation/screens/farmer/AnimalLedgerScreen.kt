@@ -26,6 +26,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.example.grama_vaxi.R
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.grama_vaxi.domain.model.Animal
@@ -42,7 +44,7 @@ fun AnimalLedgerScreen(
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
-            text = "Registered Animals",
+            text = stringResource(R.string.registered_animals),
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.padding(horizontal = AppDimens.edge, vertical = AppDimens.gutter)
         )
@@ -70,7 +72,7 @@ fun AnimalLedgerScreen(
             horizontalArrangement = Arrangement.End
         ) {
             PrimaryButton(
-                text = "Add Animal",
+                text = stringResource(R.string.add_animal),
                 onClick = onAddAnimal,
                 icon = Icons.Rounded.Add,
                 height = AppDimens.primaryButtonLarge
@@ -129,7 +131,7 @@ private fun AnimalLedgerItem(
                         contentDescription = null,
                         modifier = Modifier.size(16.dp)
                     )
-                    Text("${animal.ageMonths / 12} years", style = MaterialTheme.typography.labelMedium)
+                    Text("${animal.ageMonths / 12} ${stringResource(R.string.years)}", style = MaterialTheme.typography.labelMedium)
                 }
             }
 

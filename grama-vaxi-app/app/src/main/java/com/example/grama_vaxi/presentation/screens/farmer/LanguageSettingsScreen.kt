@@ -19,6 +19,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.example.grama_vaxi.R
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import com.example.grama_vaxi.domain.model.AppLanguage
 import com.example.grama_vaxi.presentation.components.AppDimens
 import com.example.grama_vaxi.presentation.components.SettingsSelectionRow
@@ -33,10 +37,10 @@ fun LanguageSettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Language") },
+                title = { Text(stringResource(R.string.language)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -51,22 +55,28 @@ fun LanguageSettingsScreen(
             verticalArrangement = Arrangement.spacedBy(AppDimens.gutter)
         ) {
             Text(
-                text = "Choose the language you prefer.",
+                text = stringResource(R.string.choose_language),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             SettingsSelectionRow(
                 icon = Icons.Rounded.Language,
-                label = "English",
+                label = stringResource(R.string.english),
                 selected = currentLanguage == AppLanguage.ENGLISH,
-                onClick = { onLanguageSelected(AppLanguage.ENGLISH) }
+                onClick = { 
+                    onLanguageSelected(AppLanguage.ENGLISH)
+                    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags("en"))
+                }
             )
             SettingsSelectionRow(
                 icon = Icons.Rounded.Translate,
-                label = "Kannada",
+                label = stringResource(R.string.kannada),
                 selected = currentLanguage == AppLanguage.KANNADA,
-                onClick = { onLanguageSelected(AppLanguage.KANNADA) }
+                onClick = { 
+                    onLanguageSelected(AppLanguage.KANNADA)
+                    AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags("kn"))
+                }
             )
         }
     }

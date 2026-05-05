@@ -13,6 +13,8 @@ import androidx.compose.runtime.*
 import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.example.grama_vaxi.R
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -40,13 +42,13 @@ fun SignUpScreen(
     ) {
         // Header
         Text(
-            text = "Complete Profile",
+            text = stringResource(R.string.complete_profile),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
         Text(
-            text = "Welcome! Please provide some basic details.",
+            text = stringResource(R.string.welcome_provide_details),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -58,7 +60,7 @@ fun SignUpScreen(
             value = name,
             onValueChange = { name = it },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Full Name") },
+            label = { Text(stringResource(R.string.full_name)) },
             leadingIcon = { Icon(Icons.Rounded.Person, contentDescription = null) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
@@ -73,7 +75,7 @@ fun SignUpScreen(
             value = location,
             onValueChange = { location = it },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Village / Location") },
+            label = { Text(stringResource(R.string.village_location)) },
             leadingIcon = { Icon(Icons.Rounded.LocationOn, contentDescription = null) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
@@ -93,7 +95,7 @@ fun SignUpScreen(
             shape = RoundedCornerShape(AppDimens.radiusLarge),
             enabled = name.isNotBlank() && location.isNotBlank()
         ) {
-            Text("Complete Registration")
+            Text(stringResource(R.string.complete_registration))
         }
     }
 }

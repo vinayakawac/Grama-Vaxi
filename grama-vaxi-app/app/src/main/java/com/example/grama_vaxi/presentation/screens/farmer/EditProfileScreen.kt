@@ -26,6 +26,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.example.grama_vaxi.R
 import androidx.compose.ui.text.input.KeyboardType
 import com.example.grama_vaxi.presentation.components.AppDimens
 import com.example.grama_vaxi.presentation.viewmodel.AuthUiState
@@ -63,10 +65,10 @@ fun EditProfileScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Edit Profile") },
+                title = { Text(stringResource(R.string.edit_profile_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
                 actions = {
@@ -83,7 +85,7 @@ fun EditProfileScreen(
                             onBack()
                         }
                     ) {
-                        Icon(Icons.Rounded.Check, contentDescription = "Save")
+                        Icon(Icons.Rounded.Check, contentDescription = stringResource(R.string.save))
                     }
                 }
             )
@@ -97,27 +99,27 @@ fun EditProfileScreen(
                 .padding(AppDimens.gutter),
             verticalArrangement = Arrangement.spacedBy(AppDimens.gutter)
         ) {
-            Text("Account Details", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.account_details), style = MaterialTheme.typography.titleMedium)
 
             OutlinedTextField(
                 value = userName,
                 onValueChange = { userName = it },
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text("User Name") },
+                label = { Text(stringResource(R.string.user_name)) },
                 singleLine = true
             )
             OutlinedTextField(
                 value = location,
                 onValueChange = { location = it },
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text("Location") },
+                label = { Text(stringResource(R.string.location)) },
                 singleLine = true
             )
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text("Email (used for login)") },
+                label = { Text(stringResource(R.string.email_label)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
@@ -125,7 +127,7 @@ fun EditProfileScreen(
                 value = phoneNumber,
                 onValueChange = { phoneNumber = it },
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text("Phone") },
+                label = { Text(stringResource(R.string.phone)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
             )
@@ -133,7 +135,7 @@ fun EditProfileScreen(
                 value = age,
                 onValueChange = { age = it },
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text("Age") },
+                label = { Text(stringResource(R.string.age)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
@@ -141,7 +143,7 @@ fun EditProfileScreen(
                 value = roleLabel,
                 onValueChange = { roleLabel = it },
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text("Role (optional)") },
+                label = { Text(stringResource(R.string.role_optional)) },
                 singleLine = true
             )
         }

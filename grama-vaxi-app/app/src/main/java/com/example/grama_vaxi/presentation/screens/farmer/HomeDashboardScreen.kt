@@ -19,6 +19,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.example.grama_vaxi.R
 import com.example.grama_vaxi.domain.model.AlertLevel
 import com.example.grama_vaxi.presentation.components.AlertBanner
 import com.example.grama_vaxi.presentation.components.AppDimens
@@ -44,12 +46,12 @@ fun HomeDashboardScreen(
         item {
             Column(verticalArrangement = Arrangement.spacedBy(AppDimens.unit)) {
                 Text(
-                    text = "Namaskara",
+                    text = stringResource(R.string.namaskara),
                     style = MaterialTheme.typography.headlineLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = "Here is your farm's overview today.",
+                    text = stringResource(R.string.dashboard_subtitle),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -58,9 +60,9 @@ fun HomeDashboardScreen(
 
         item {
             CardStat(
-                title = "Total Animals Registered",
+                title = stringResource(R.string.total_animals_registered),
                 value = uiState.totalAnimals.toString(),
-                subtitle = "animals",
+                subtitle = stringResource(R.string.animals),
                 icon = Icons.Rounded.CrueltyFree,
                 containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
                 iconBadgeColor = MaterialTheme.colorScheme.primary,
@@ -71,9 +73,9 @@ fun HomeDashboardScreen(
 
         item {
             CardStat(
-                title = "Upcoming Vaccinations",
+                title = stringResource(R.string.upcoming_vaccinations),
                 value = uiState.upcomingVaccinations.toString(),
-                subtitle = "scheduled",
+                subtitle = stringResource(R.string.scheduled),
                 icon = Icons.Rounded.CalendarMonth,
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 iconBadgeColor = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -84,9 +86,9 @@ fun HomeDashboardScreen(
 
         item {
             CardStat(
-                title = "Alerts",
+                title = stringResource(R.string.alerts),
                 value = uiState.unreadAlerts.toString(),
-                subtitle = "require attention",
+                subtitle = stringResource(R.string.require_attention),
                 icon = Icons.Rounded.NotificationsActive,
                 containerColor = MaterialTheme.colorScheme.errorContainer,
                 iconBadgeColor = MaterialTheme.colorScheme.error,
@@ -97,7 +99,7 @@ fun HomeDashboardScreen(
 
         item {
             Text(
-                text = "Quick Actions",
+                text = stringResource(R.string.quick_actions),
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(top = AppDimens.unit)
             )
@@ -105,7 +107,7 @@ fun HomeDashboardScreen(
 
         item {
             PrimaryButton(
-                text = "Register Animal",
+                text = stringResource(R.string.register_animal),
                 onClick = onRegisterAnimal,
                 icon = Icons.Rounded.AddCircle
             )
@@ -113,7 +115,7 @@ fun HomeDashboardScreen(
 
         item {
             SecondaryButton(
-                text = "View Calendar",
+                text = stringResource(R.string.view_calendar),
                 onClick = onViewCalendar,
                 icon = Icons.Rounded.CalendarMonth
             )
@@ -121,7 +123,7 @@ fun HomeDashboardScreen(
 
         item {
             SecondaryButton(
-                text = "Report Disease",
+                text = stringResource(R.string.report_disease),
                 onClick = onReportDisease,
                 icon = Icons.Rounded.Warning
             )
@@ -130,7 +132,7 @@ fun HomeDashboardScreen(
         if (uiState.highlightedAlerts.isNotEmpty()) {
             item {
                 Text(
-                    text = "Active Alerts",
+                    text = stringResource(R.string.active_alerts),
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(top = AppDimens.unit)
                 )

@@ -19,6 +19,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -59,13 +61,13 @@ fun LoginScreen(
     ) {
         // ── Header ──────────────────────────────────────────────────────────
         Text(
-            text = "Grama-Vaxi",
+            text = stringResource(R.string.app_name_en),
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
         Text(
-            text = "ಗ್ರಾಮ ವ್ಯಾಕ್ಸಿ",
+            text = stringResource(R.string.app_name_kn),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -92,7 +94,7 @@ fun LoginScreen(
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    text = "Continue with Google",
+                    text = stringResource(R.string.continue_with_google),
                     style = MaterialTheme.typography.labelLarge
                 )
             }
@@ -105,7 +107,7 @@ fun LoginScreen(
         ) {
             HorizontalDivider(modifier = Modifier.weight(1f))
             Text(
-                text = "  or use phone  ",
+                text = stringResource(R.string.or_use_phone),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -117,8 +119,8 @@ fun LoginScreen(
             value = uiState.phoneNumber,
             onValueChange = { if (it.length <= 10) onPhoneChanged(it) },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Mobile Number") },
-            placeholder = { Text("10-digit number") },
+            label = { Text(stringResource(R.string.mobile_number)) },
+            placeholder = { Text(stringResource(R.string.ten_digit_number)) },
             leadingIcon = {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -161,9 +163,9 @@ fun LoginScreen(
             } else {
                 Text(
                     text = if (uiState.otpCooldownSeconds > 0)
-                        "Resend in ${uiState.otpCooldownSeconds}s"
-                    else if (otpSent) "Resend OTP"
-                    else "Send OTP"
+                        stringResource(R.string.resend_in_s, uiState.otpCooldownSeconds)
+                    else if (otpSent) stringResource(R.string.resend_otp)
+                    else stringResource(R.string.send_otp)
                 )
             }
         }
@@ -173,7 +175,7 @@ fun LoginScreen(
             HorizontalDivider()
 
             Text(
-                text = "OTP sent to +91 ${uiState.phoneNumber}",
+                text = stringResource(R.string.otp_sent_to, uiState.phoneNumber),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -186,7 +188,7 @@ fun LoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(otpFocus),
-                label = { Text("Enter OTP") },
+                label = { Text(stringResource(R.string.enter_otp)) },
                 leadingIcon = { Icon(Icons.Rounded.Lock, contentDescription = null) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
@@ -216,7 +218,7 @@ fun LoginScreen(
                         color = MaterialTheme.colorScheme.onPrimary
                     )
                 } else {
-                    Text("Login / ಲಾಗಿನ್")
+                    Text(stringResource(R.string.login_btn))
                 }
             }
         }

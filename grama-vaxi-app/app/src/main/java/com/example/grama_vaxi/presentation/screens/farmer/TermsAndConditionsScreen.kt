@@ -27,6 +27,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.example.grama_vaxi.R
 import com.example.grama_vaxi.presentation.components.AppDimens
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,10 +43,10 @@ fun TermsAndConditionsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Terms & Conditions") },
+                title = { Text(stringResource(R.string.terms_and_conditions)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -59,32 +61,27 @@ fun TermsAndConditionsScreen(
             verticalArrangement = Arrangement.spacedBy(AppDimens.gutter)
         ) {
             Text(
-                text = "Effective date: May 2, 2026",
+                text = stringResource(R.string.effective_date),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
-                text = "By using Grama-Vaxi you agree to the terms below.",
+                text = stringResource(R.string.terms_agreement),
                 style = MaterialTheme.typography.bodyLarge
             )
             Text(
-                text = "1. Use responsibly: Use the app to record and monitor livestock health data accurately.\n" +
-                    "2. Data ownership: You own the data you submit. We use it to provide services and alerts.\n" +
-                    "3. Notifications: Alerts are informational and do not replace professional veterinary advice.\n" +
-                    "4. Account security: Keep your device and login details secure.\n" +
-                    "5. Account deletion retention: When you delete your account, app access is removed immediately and your identity/credential info shown in the admin dashboard is removed after 15 days.\n" +
-                    "6. Service changes: Features may change to improve reliability and performance.",
+                text = stringResource(R.string.terms_list),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Text(
-                text = "Delete Account",
+                text = stringResource(R.string.delete_account),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "Deleting your account removes app access immediately. Identity and credential information shown in the admin dashboard is removed after 15 days.",
+                text = stringResource(R.string.delete_account_desc),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -98,7 +95,7 @@ fun TermsAndConditionsScreen(
                 )
             ) {
                 Icon(Icons.Rounded.DeleteForever, contentDescription = null)
-                Text("Delete my account", modifier = Modifier.padding(start = AppDimens.unit))
+                Text(stringResource(R.string.delete_my_account), modifier = Modifier.padding(start = AppDimens.unit))
             }
 
             deleteError?.let { message ->
@@ -115,9 +112,9 @@ fun TermsAndConditionsScreen(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Delete account?") },
+            title = { Text(stringResource(R.string.delete_account_q)) },
             text = {
-                Text("This will remove your account access now. Admin dashboard identity/credential information linked to your records is removed after 15 days.")
+                Text(stringResource(R.string.delete_account_dialog_desc))
             },
             confirmButton = {
                 TextButton(
@@ -130,12 +127,12 @@ fun TermsAndConditionsScreen(
                         }
                     }
                 ) {
-                    Text("Delete")
+                    Text(stringResource(R.string.delete))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )

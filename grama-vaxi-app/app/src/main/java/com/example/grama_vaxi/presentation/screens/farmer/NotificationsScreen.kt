@@ -26,6 +26,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.example.grama_vaxi.R
 import androidx.compose.ui.unit.dp
 import com.example.grama_vaxi.presentation.components.AlertBanner
 import com.example.grama_vaxi.presentation.components.AppDimens
@@ -45,9 +47,9 @@ fun NotificationsScreen(
         verticalArrangement = Arrangement.spacedBy(AppDimens.gutter)
     ) {
         item {
-            Text("Active Alerts", style = MaterialTheme.typography.headlineLarge)
+            Text(stringResource(R.string.active_alerts), style = MaterialTheme.typography.headlineLarge)
             Text(
-                "Critical updates for your livestock.",
+                stringResource(R.string.critical_updates),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -57,7 +59,7 @@ fun NotificationsScreen(
         if (uiState.upcomingVaccines.isNotEmpty()) {
             item {
                 Text(
-                    "Scheduled Vaccinations",
+                    stringResource(R.string.scheduled_vaccinations),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(top = AppDimens.gutter)
                 )
@@ -111,7 +113,7 @@ fun NotificationsScreen(
         if (uiState.alerts.isNotEmpty()) {
             item {
                 Text(
-                    "Notifications",
+                    stringResource(R.string.notifications),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(top = AppDimens.gutter)
                 )
@@ -158,7 +160,7 @@ fun NotificationsScreen(
 
                         Icon(
                             imageVector = if (alert.isRead) Icons.Rounded.Done else Icons.Rounded.Notifications,
-                            contentDescription = "Mark Read",
+                            contentDescription = stringResource(R.string.mark_read),
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier
                                 .padding(start = AppDimens.unit)

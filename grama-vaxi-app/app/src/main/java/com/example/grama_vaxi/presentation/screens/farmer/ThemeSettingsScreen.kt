@@ -20,6 +20,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.example.grama_vaxi.R
 import com.example.grama_vaxi.domain.model.AppTheme
 import com.example.grama_vaxi.presentation.components.AppDimens
 import com.example.grama_vaxi.presentation.components.SettingsSelectionRow
@@ -34,10 +36,10 @@ fun ThemeSettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Dark Mode") },
+                title = { Text(stringResource(R.string.dark_mode_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -52,26 +54,26 @@ fun ThemeSettingsScreen(
             verticalArrangement = Arrangement.spacedBy(AppDimens.gutter)
         ) {
             Text(
-                text = "Choose how Grama-Vaxi looks on your phone.",
+                text = stringResource(R.string.choose_app_appearance),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             SettingsSelectionRow(
                 icon = Icons.Rounded.SettingsSuggest,
-                label = "System Default",
+                label = stringResource(R.string.system_default),
                 selected = currentTheme == AppTheme.SYSTEM,
                 onClick = { onThemeSelected(AppTheme.SYSTEM) }
             )
             SettingsSelectionRow(
                 icon = Icons.Rounded.LightMode,
-                label = "Light Mode",
+                label = stringResource(R.string.light_mode),
                 selected = currentTheme == AppTheme.LIGHT,
                 onClick = { onThemeSelected(AppTheme.LIGHT) }
             )
             SettingsSelectionRow(
                 icon = Icons.Rounded.DarkMode,
-                label = "Dark Mode",
+                label = stringResource(R.string.dark_mode),
                 selected = currentTheme == AppTheme.DARK,
                 onClick = { onThemeSelected(AppTheme.DARK) }
             )

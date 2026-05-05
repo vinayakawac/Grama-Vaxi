@@ -17,6 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.example.grama_vaxi.R
 import androidx.compose.ui.unit.dp
 import com.example.grama_vaxi.domain.model.Animal
 import com.example.grama_vaxi.presentation.components.AppDimens
@@ -41,16 +43,16 @@ fun DiseaseReportScreen(
         verticalArrangement = Arrangement.spacedBy(AppDimens.gutter)
     ) {
         item {
-            Text("Report Disease", style = MaterialTheme.typography.headlineLarge)
+            Text(stringResource(R.string.report_disease), style = MaterialTheme.typography.headlineLarge)
             Text(
-                "Alert local veterinary services immediately.",
+                stringResource(R.string.alert_vet_services),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
         item {
-            Text("Select Affected Animal(s)", style = MaterialTheme.typography.labelLarge)
+            Text(stringResource(R.string.select_affected_animals), style = MaterialTheme.typography.labelLarge)
         }
 
         items(uiState.animals) { animal ->
@@ -65,7 +67,7 @@ fun DiseaseReportScreen(
             StepperInput(
                 value = uiState.affectedCount,
                 onValueChange = onAffectedCountChanged,
-                label = "Number of Affected Animals"
+                label = stringResource(R.string.number_affected_animals)
             )
         }
 
@@ -74,8 +76,8 @@ fun DiseaseReportScreen(
                 value = uiState.symptoms,
                 onValueChange = onSymptomsChanged,
                 modifier = Modifier.fillMaxWidth(),
-                label = "Symptoms Observed",
-                placeholder = "Describe symptoms clearly...",
+                label = stringResource(R.string.symptoms_observed),
+                placeholder = stringResource(R.string.describe_symptoms),
                 singleLine = false
             )
         }
@@ -85,15 +87,15 @@ fun DiseaseReportScreen(
                 value = uiState.notes,
                 onValueChange = onNotesChanged,
                 modifier = Modifier.fillMaxWidth(),
-                label = "Additional Notes",
-                placeholder = "Village, behavior changes, urgency",
+                label = stringResource(R.string.additional_notes),
+                placeholder = stringResource(R.string.notes_placeholder),
                 singleLine = false
             )
         }
 
         item {
             PrimaryButton(
-                text = "Classify Symptoms",
+                text = stringResource(R.string.classify_symptoms),
                 onClick = onClassifySymptoms,
                 icon = Icons.Rounded.Warning,
                 enabled = uiState.symptoms.isNotBlank()
@@ -112,7 +114,7 @@ fun DiseaseReportScreen(
 
         item {
             PrimaryButton(
-                text = "Submit Report",
+                text = stringResource(R.string.submit_report),
                 onClick = onSubmit,
                 enabled = uiState.selectedAnimalId.isNotBlank() && uiState.symptoms.isNotBlank()
             )

@@ -13,6 +13,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.example.grama_vaxi.R
 import com.example.grama_vaxi.presentation.components.AnimalTypeSelector
 import com.example.grama_vaxi.presentation.components.AppDimens
 import com.example.grama_vaxi.presentation.components.InputField
@@ -38,16 +40,16 @@ fun RegisterAnimalScreen(
         verticalArrangement = Arrangement.spacedBy(AppDimens.gutter)
     ) {
         item {
-            Text("Register Animal", style = MaterialTheme.typography.headlineLarge)
+            Text(stringResource(R.string.register_animal), style = MaterialTheme.typography.headlineLarge)
         }
 
         item {
-            Text("Animal Photo", style = MaterialTheme.typography.labelLarge)
+            Text(stringResource(R.string.animal_photo), style = MaterialTheme.typography.labelLarge)
             Spacer(modifier = Modifier.height(AppDimens.unit))
             PhotoPickerBox(
                 onClick = onPickPhoto,
-                title = "Tap to Take Photo",
-                subtitle = "or select from gallery"
+                title = stringResource(R.string.tap_to_take_photo),
+                subtitle = stringResource(R.string.or_select_from_gallery)
             )
         }
 
@@ -62,8 +64,8 @@ fun RegisterAnimalScreen(
             InputField(
                 value = uiState.name,
                 onValueChange = onNameChanged,
-                label = "Animal Name",
-                placeholder = "e.g., Gauri"
+                label = stringResource(R.string.animal_name),
+                placeholder = stringResource(R.string.animal_name_hint)
             )
         }
 
@@ -71,8 +73,8 @@ fun RegisterAnimalScreen(
             InputField(
                 value = uiState.breed,
                 onValueChange = onBreedChanged,
-                label = "Breed",
-                placeholder = "e.g., Holstein"
+                label = stringResource(R.string.breed),
+                placeholder = stringResource(R.string.breed_hint)
             )
         }
 
@@ -80,8 +82,8 @@ fun RegisterAnimalScreen(
             InputField(
                 value = uiState.village,
                 onValueChange = onVillageChanged,
-                label = "Village",
-                placeholder = "e.g., Palhalli"
+                label = stringResource(R.string.village),
+                placeholder = stringResource(R.string.village_hint)
             )
         }
 
@@ -89,13 +91,13 @@ fun RegisterAnimalScreen(
             StepperInput(
                 value = uiState.ageMonths,
                 onValueChange = onAgeChanged,
-                label = "Age (Months)"
+                label = stringResource(R.string.age_months)
             )
         }
 
         item {
             PrimaryButton(
-                text = "Register Animal",
+                text = stringResource(R.string.register_animal),
                 onClick = onSubmit,
                 icon = Icons.Rounded.AddCircle,
                 height = AppDimens.primaryButtonLarge,

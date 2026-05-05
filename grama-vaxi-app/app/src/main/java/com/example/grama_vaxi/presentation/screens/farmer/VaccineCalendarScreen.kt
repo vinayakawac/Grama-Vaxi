@@ -27,6 +27,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.example.grama_vaxi.R
 import androidx.compose.ui.unit.dp
 import com.example.grama_vaxi.presentation.components.AppDimens
 import com.example.grama_vaxi.presentation.viewmodel.VaccineCalendarUiState
@@ -56,11 +58,11 @@ fun VaccineCalendarScreen(
         verticalArrangement = Arrangement.spacedBy(AppDimens.gutter)
     ) {
         item {
-            Text("Vaccination Calendar", style = MaterialTheme.typography.headlineLarge)
+            Text(stringResource(R.string.vaccination_calendar), style = MaterialTheme.typography.headlineLarge)
         }
 
         item {
-            Text("Current month", style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(R.string.current_month), style = MaterialTheme.typography.bodyLarge)
         }
 
         item {
@@ -77,7 +79,7 @@ fun VaccineCalendarScreen(
                     ) {
                         Icon(
                             Icons.Rounded.ChevronLeft,
-                            contentDescription = "Previous month",
+                            contentDescription = stringResource(R.string.previous_month),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(16.dp)
                         )
@@ -88,7 +90,7 @@ fun VaccineCalendarScreen(
                     ) {
                         Icon(
                             Icons.Rounded.ChevronRight,
-                            contentDescription = "Next month",
+                            contentDescription = stringResource(R.string.next_month),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(16.dp)
                         )

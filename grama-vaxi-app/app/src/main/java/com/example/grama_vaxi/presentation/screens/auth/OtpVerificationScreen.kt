@@ -19,6 +19,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.example.grama_vaxi.R
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -50,12 +52,12 @@ fun OtpVerificationScreen(
         Spacer(modifier = Modifier.height(AppDimens.gutter))
 
         Text(
-            text = "Verification",
+            text = stringResource(R.string.verification),
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
         Text(
-            text = "Enter OTP sent to ${uiState.phoneNumber}",
+            text = stringResource(R.string.enter_otp_sent_to, uiState.phoneNumber),
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = AppDimens.unit)
@@ -66,8 +68,8 @@ fun OtpVerificationScreen(
         InputField(
             value = uiState.otp,
             onValueChange = onOtpChanged,
-            label = "OTP",
-            placeholder = "0000",
+            label = stringResource(R.string.otp),
+            placeholder = stringResource(R.string.otp_placeholder),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
@@ -75,9 +77,9 @@ fun OtpVerificationScreen(
 
         Text(
             text = if (uiState.otpCooldownSeconds > 0) {
-                "Resend OTP in ${uiState.otpCooldownSeconds} sec"
+                stringResource(R.string.resend_otp_in_sec, uiState.otpCooldownSeconds)
             } else {
-                "You can request a new OTP"
+                stringResource(R.string.request_new_otp)
             },
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -86,7 +88,7 @@ fun OtpVerificationScreen(
         Spacer(modifier = Modifier.height(AppDimens.gutter))
 
         PrimaryButton(
-            text = "Verify / ಪರಿಶೀಲಿಸಿ",
+            text = stringResource(R.string.verify_btn),
             onClick = onVerify,
             enabled = uiState.otp.length == 4 && !uiState.isLoading
         )

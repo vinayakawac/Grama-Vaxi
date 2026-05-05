@@ -22,6 +22,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.example.grama_vaxi.R
 import com.example.grama_vaxi.presentation.components.AppDimens
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,10 +36,10 @@ fun AppPermissionsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("App Permissions") },
+                title = { Text(stringResource(R.string.app_permissions_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -51,7 +53,7 @@ fun AppPermissionsScreen(
             verticalArrangement = Arrangement.spacedBy(AppDimens.gutter)
         ) {
             Text(
-                text = "Control access to storage, location, and notifications from system settings.",
+                text = stringResource(R.string.control_access),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -66,7 +68,7 @@ fun AppPermissionsScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(Icons.Rounded.Security, contentDescription = null)
-                Text("Open app permissions", modifier = Modifier.padding(start = AppDimens.unit))
+                Text(stringResource(R.string.open_app_permissions_btn), modifier = Modifier.padding(start = AppDimens.unit))
             }
         }
     }

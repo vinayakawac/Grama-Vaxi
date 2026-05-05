@@ -36,6 +36,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.example.grama_vaxi.R
 import com.example.grama_vaxi.presentation.components.AppDimens
 import com.example.grama_vaxi.presentation.components.SettingsActionRow
 import com.example.grama_vaxi.presentation.viewmodel.AuthUiState
@@ -57,16 +59,16 @@ fun ProfileScreen(
     val contactLine = when {
         uiState.session.email.isNotBlank() -> uiState.session.email
         uiState.session.phoneNumber.isNotBlank() -> uiState.session.phoneNumber
-        else -> "Add contact information"
+        else -> stringResource(R.string.add_contact_information)
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Profile") },
+                title = { Text(stringResource(R.string.profile)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -89,7 +91,7 @@ fun ProfileScreen(
             )
 
             Text(
-                text = uiState.session.userName.ifBlank { "Your profile" },
+                text = uiState.session.userName.ifBlank { stringResource(R.string.your_profile) },
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -102,55 +104,55 @@ fun ProfileScreen(
 
             HorizontalDivider(modifier = Modifier.padding(vertical = AppDimens.unit))
 
-            ProfileSectionTitle(title = "Quick Actions")
+            ProfileSectionTitle(title = stringResource(R.string.quick_actions))
             SettingsActionRow(
                 icon = Icons.Rounded.Edit,
-                title = "Edit profile",
-                subtitle = "Update name, phone, and location",
+                title = stringResource(R.string.edit_profile),
+                subtitle = stringResource(R.string.update_name_phone_location),
                 onClick = onEditProfile
             )
             SettingsActionRow(
                 icon = Icons.Rounded.Notifications,
-                title = "Alerts & reminders",
-                subtitle = "Open your in-app notifications",
+                title = stringResource(R.string.alerts_and_reminders),
+                subtitle = stringResource(R.string.open_in_app_notifications),
                 onClick = onOpenNotifications
             )
             SettingsActionRow(
                 icon = Icons.Rounded.NotificationsActive,
-                title = "Notification settings",
-                subtitle = "Manage system notification permissions",
+                title = stringResource(R.string.notification_settings),
+                subtitle = stringResource(R.string.manage_system_permissions),
                 onClick = onOpenNotificationSettings
             )
             SettingsActionRow(
                 icon = Icons.Rounded.Security,
-                title = "App permissions",
-                subtitle = "Open app permissions and privacy controls",
+                title = stringResource(R.string.app_permissions),
+                subtitle = stringResource(R.string.open_app_permissions),
                 onClick = onOpenAppPermissions
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = AppDimens.unit))
 
-            ProfileSectionTitle(title = "Preferences")
+            ProfileSectionTitle(title = stringResource(R.string.preferences))
             SettingsActionRow(
                 icon = Icons.Rounded.Language,
-                title = "Language",
-                subtitle = "Change app language",
+                title = stringResource(R.string.language),
+                subtitle = stringResource(R.string.change_app_language),
                 onClick = onOpenLanguage
             )
             SettingsActionRow(
                 icon = Icons.Rounded.Palette,
-                title = "Dark mode",
-                subtitle = "Choose light, dark, or system",
+                title = stringResource(R.string.dark_mode),
+                subtitle = stringResource(R.string.choose_light_dark_system),
                 onClick = onOpenTheme
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = AppDimens.unit))
 
-            ProfileSectionTitle(title = "Legal")
+            ProfileSectionTitle(title = stringResource(R.string.legal))
             SettingsActionRow(
                 icon = Icons.Rounded.Gavel,
-                title = "Terms & Conditions",
-                subtitle = "Read terms and delete account",
+                title = stringResource(R.string.terms_and_conditions),
+                subtitle = stringResource(R.string.read_terms),
                 onClick = onOpenTerms
             )
 
@@ -166,7 +168,7 @@ fun ProfileScreen(
             ) {
                 Icon(Icons.AutoMirrored.Rounded.Logout, contentDescription = null)
                 Spacer(modifier = Modifier.width(AppDimens.unit))
-                Text("Logout")
+                Text(stringResource(R.string.logout))
             }
         }
     }

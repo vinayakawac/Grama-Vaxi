@@ -22,6 +22,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.example.grama_vaxi.R
 import com.example.grama_vaxi.presentation.components.AppDimens
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,10 +36,10 @@ fun NotificationSettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Notification Settings") },
+                title = { Text(stringResource(R.string.notification_settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
             )
@@ -51,7 +53,7 @@ fun NotificationSettingsScreen(
             verticalArrangement = Arrangement.spacedBy(AppDimens.gutter)
         ) {
             Text(
-                text = "Manage your system notification permissions for alerts and reminders.",
+                text = stringResource(R.string.manage_notification_permissions),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -70,7 +72,7 @@ fun NotificationSettingsScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(Icons.Rounded.NotificationsActive, contentDescription = null)
-                Text("Open notification settings", modifier = Modifier.padding(start = AppDimens.unit))
+                Text(stringResource(R.string.open_notification_settings), modifier = Modifier.padding(start = AppDimens.unit))
             }
         }
     }

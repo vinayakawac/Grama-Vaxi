@@ -20,6 +20,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.example.grama_vaxi.R
 import androidx.compose.ui.unit.dp
 import com.example.grama_vaxi.domain.model.AlertLevel
 import com.example.grama_vaxi.domain.model.HealthAlert
@@ -36,12 +38,12 @@ fun CampAlertScreen(
     val safeAlert = alert ?: HealthAlert(
         id = "",
         ownerUid = "all",
-        title = "Health Camp Tomorrow",
-        message = "A veterinary doctor is arriving to administer vaccines and checkups.",
+        title = stringResource(R.string.health_camp_tomorrow),
+        message = stringResource(R.string.health_camp_desc),
         level = AlertLevel.URGENT,
-        targetVillage = "Palhalli Village",
-        campLocation = "Temple Square",
-        campTime = "08:00 AM - 02:00 PM"
+        targetVillage = stringResource(R.string.palhalli_village),
+        campLocation = stringResource(R.string.temple_square),
+        campTime = stringResource(R.string.camp_time_sample)
     )
 
     LazyColumn(
@@ -67,19 +69,19 @@ fun CampAlertScreen(
                         .padding(AppDimens.cardPadding),
                     verticalArrangement = Arrangement.spacedBy(AppDimens.unit)
                 ) {
-                    RowItem(icon = Icons.Rounded.LocationOn, label = "Location", value = safeAlert.campLocation ?: "Temple Square")
-                    RowItem(icon = Icons.Rounded.Schedule, label = "Time", value = safeAlert.campTime ?: "08:00 AM - 02:00 PM")
-                    RowItem(icon = Icons.Rounded.Vaccines, label = "Services", value = "FMD Boosters, Checkups, Tagging")
+                    RowItem(icon = Icons.Rounded.LocationOn, label = stringResource(R.string.location), value = safeAlert.campLocation ?: stringResource(R.string.temple_square))
+                    RowItem(icon = Icons.Rounded.Schedule, label = stringResource(R.string.time), value = safeAlert.campTime ?: stringResource(R.string.camp_time_sample))
+                    RowItem(icon = Icons.Rounded.Vaccines, label = stringResource(R.string.services), value = stringResource(R.string.fmd_boosters))
                 }
             }
         }
 
         item {
-            PrimaryButton(text = "Mark as Seen", onClick = onMarkRead)
+            PrimaryButton(text = stringResource(R.string.mark_as_seen), onClick = onMarkRead)
         }
 
         item {
-            SecondaryButton(text = "View Directions", onClick = {})
+            SecondaryButton(text = stringResource(R.string.view_directions), onClick = {})
         }
     }
 }
