@@ -190,21 +190,15 @@ class AuthRepositoryImpl @Inject constructor(
             }
 
             MainScope().launch {
+                // Best-effort: unregister FCM token and stamp Firestore for admin.
+                // If either fails (e.g. network issue or security rules), we still
+                // proceed with deleting the Firebase Auth account immediately.
                 runCatching {
-                    notificationTokenSyncManager.unregisterCurrentToken().getOrThrow()
+                    notificationTokenSyncManager.unregisterCurrentToken()
                     scheduleDashboardCredentialPurge(user.uid)
-                }.onFailure { error ->
-                    cont.resume(
-                        Result.failure(
-                            IllegalStateException(
-                                "Failed to schedule 15-day dashboard data cleanup. Please try again.",
-                                error
-                            )
-                        )
-                    )
-                    return@launch
-                }
+                } // intentionally ignoring failure — admin stamp is non-critical
 
+                // Always delete the auth record and wipe local session.
                 user.delete()
                     .addOnSuccessListener {
                         MainScope().launch {
@@ -224,6 +218,21 @@ class AuthRepositoryImpl @Inject constructor(
         val requestedAt = Timestamp.now()
         val purgeAt = Timestamp(Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(15)))
 
+        val deletionMarker = mapOf(
+            "isDeleted" to true,
+            "accountDeletionRequestedAt" to requestedAt,
+            "accountPurgeAt" to purgeAt
+        )
+
+        // 1. Stamp the user's own profile document so the admin dashboard
+        //    knows the account is pending purge (keeps data visible for 15 days).
+        firestore.collection("users")
+            .document(ownerUid)
+            .set(deletionMarker, SetOptions.merge())
+            .await()
+
+        // 2. Stamp every sub-collection document owned by this user so that
+        //    admin queries can filter deleted accounts and auto-purge after 15 days.
         suspend fun markCollection(collectionName: String) {
             val snapshot = firestore.collection(collectionName)
                 .whereEqualTo("ownerUid", ownerUid)
@@ -235,10 +244,7 @@ class AuthRepositoryImpl @Inject constructor(
                 chunk.forEach { doc ->
                     batch.set(
                         doc.reference,
-                        mapOf(
-                            "accountDeletionRequestedAt" to requestedAt,
-                            "accountPurgeAt" to purgeAt
-                        ),
+                        deletionMarker,
                         SetOptions.merge()
                     )
                 }

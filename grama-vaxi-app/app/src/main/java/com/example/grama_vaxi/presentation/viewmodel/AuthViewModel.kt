@@ -98,7 +98,9 @@ class AuthViewModel @Inject constructor(
 
     fun deleteAccount(onResult: (Boolean, String?) -> Unit) {
         viewModelScope.launch {
+            _uiState.update { it.copy(isDeletingAccount = true) }
             val result = deleteAccountUseCase()
+            _uiState.update { it.copy(isDeletingAccount = false) }
             onResult(result.isSuccess, result.exceptionOrNull()?.message)
         }
     }
@@ -255,5 +257,6 @@ data class AuthUiState(
     val otpCooldownSeconds: Int = 0,
     val isLoading: Boolean = false,
     val googleSignInLoading: Boolean = false,
+    val isDeletingAccount: Boolean = false,
     val errorMessage: String? = null
 )

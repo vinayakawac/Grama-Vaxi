@@ -2,9 +2,12 @@ package com.example.grama_vaxi.presentation.screens.farmer
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -13,6 +16,7 @@ import androidx.compose.material.icons.rounded.DeleteForever
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,6 +38,7 @@ import com.example.grama_vaxi.presentation.components.AppDimens
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TermsAndConditionsScreen(
+    isDeleting: Boolean = false,
     onDeleteAccount: (onResult: (Boolean, String?) -> Unit) -> Unit,
     onBack: () -> Unit
 ) {
@@ -89,13 +94,24 @@ fun TermsAndConditionsScreen(
             Button(
                 onClick = { showDeleteDialog = true },
                 modifier = Modifier.fillMaxWidth(),
+                enabled = !isDeleting,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.errorContainer,
                     contentColor = MaterialTheme.colorScheme.onErrorContainer
                 )
             ) {
-                Icon(Icons.Rounded.DeleteForever, contentDescription = null)
-                Text(stringResource(R.string.delete_my_account), modifier = Modifier.padding(start = AppDimens.unit))
+                if (isDeleting) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(AppDimens.unit * 2),
+                        strokeWidth = AppDimens.unit / 4,
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                    Spacer(Modifier.width(AppDimens.unit))
+                    Text(stringResource(R.string.deleting_account))
+                } else {
+                    Icon(Icons.Rounded.DeleteForever, contentDescription = null)
+                    Text(stringResource(R.string.delete_my_account), modifier = Modifier.padding(start = AppDimens.unit))
+                }
             }
 
             deleteError?.let { message ->

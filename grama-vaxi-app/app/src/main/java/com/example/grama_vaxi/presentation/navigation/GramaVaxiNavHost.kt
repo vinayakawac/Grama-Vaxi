@@ -277,6 +277,7 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
 
             composable(NavRoutes.TermsConditions) {
                 TermsAndConditionsScreen(
+                    isDeleting = authState.isDeletingAccount,
                     onDeleteAccount = { onResult ->
                         authViewModel.deleteAccount { success, message ->
                             onResult(success, message)
