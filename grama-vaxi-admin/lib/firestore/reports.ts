@@ -2,6 +2,24 @@
 import { adminDb } from '@/lib/firebase/admin'
 import type { DiseaseReport, ReportStatus, PaginatedResult } from '@/types'
 
+function toDate(value: unknown): Date | null {
+  if (!value) return null
+  if (value instanceof Date) return value
+  if (
+    typeof value === 'object' &&
+    value !== null &&
+    'toDate' in value &&
+    typeof (value as { toDate: () => Date }).toDate === 'function'
+  ) {
+    return (value as { toDate: () => Date }).toDate()
+  }
+  if (typeof value === 'string') {
+    const parsed = new Date(value)
+    if (!Number.isNaN(parsed.getTime())) return parsed
+  }
+  return null
+}
+
 /**
  * Fetches paginated disease reports from Firestore using Admin SDK.
  * Filters by village, status, and severity if provided.
@@ -40,11 +58,17 @@ export async function getReports(filters: {
     }
 
     const snap = await q.get()
+    const now = new Date()
     const data = snap.docs.slice(0, reportsPerPage).map((d) => {
       const data = d.data()
+      const purgeAt = toDate(data.accountPurgeAt)
+      const shouldRedactIdentity = purgeAt !== null && purgeAt.getTime() <= now.getTime()
+
       return {
         id: d.id,
         ...data,
+        farmerName: shouldRedactIdentity ? 'Deleted User' : (data.farmerName ?? data.ownerName ?? 'Unknown'),
+        farmerId: shouldRedactIdentity ? 'REDACTED' : (data.farmerId ?? data.ownerId ?? data.ownerUid ?? ''),
         // Convert Firestore Timestamp to JS Date then to ISO string
         reportedAt: data.reportedAt?.toDate().toISOString() || new Date().toISOString(), 
       } as DiseaseReport

@@ -13,10 +13,15 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.tasks.await
+import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -184,18 +189,66 @@ class AuthRepositoryImpl @Inject constructor(
                 return@suspendCancellableCoroutine
             }
 
-            user.delete()
-                .addOnSuccessListener {
-                    MainScope().launch {
-                        firebaseAuth.signOut()
-                        sessionLocalDataSource.clearSession()
-                        cont.resume(Result.success(Unit))
+            MainScope().launch {
+                runCatching {
+                    notificationTokenSyncManager.unregisterCurrentToken().getOrThrow()
+                    scheduleDashboardCredentialPurge(user.uid)
+                }.onFailure { error ->
+                    cont.resume(
+                        Result.failure(
+                            IllegalStateException(
+                                "Failed to schedule 15-day dashboard data cleanup. Please try again.",
+                                error
+                            )
+                        )
+                    )
+                    return@launch
+                }
+
+                user.delete()
+                    .addOnSuccessListener {
+                        MainScope().launch {
+                            firebaseAuth.signOut()
+                            sessionLocalDataSource.clearSession()
+                            cont.resume(Result.success(Unit))
+                        }
                     }
-                }
-                .addOnFailureListener { e ->
-                    cont.resume(Result.failure(e))
-                }
+                    .addOnFailureListener { e ->
+                        cont.resume(Result.failure(e))
+                    }
+            }
         }
+
+    private suspend fun scheduleDashboardCredentialPurge(ownerUid: String) {
+        val firestore = FirebaseFirestore.getInstance()
+        val requestedAt = Timestamp.now()
+        val purgeAt = Timestamp(Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(15)))
+
+        suspend fun markCollection(collectionName: String) {
+            val snapshot = firestore.collection(collectionName)
+                .whereEqualTo("ownerUid", ownerUid)
+                .get()
+                .await()
+
+            snapshot.documents.chunked(400).forEach { chunk ->
+                val batch = firestore.batch()
+                chunk.forEach { doc ->
+                    batch.set(
+                        doc.reference,
+                        mapOf(
+                            "accountDeletionRequestedAt" to requestedAt,
+                            "accountPurgeAt" to purgeAt
+                        ),
+                        SetOptions.merge()
+                    )
+                }
+                batch.commit().await()
+            }
+        }
+
+        markCollection("animals")
+        markCollection("reports")
+    }
 }
 
 object FirebaseActivityHolder {

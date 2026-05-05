@@ -2,6 +2,24 @@
 import { adminDb } from '@/lib/firebase/admin'
 import type { Animal, Species, VaccineStatus, PaginatedResult } from '@/types'
 
+function toDate(value: unknown): Date | null {
+  if (!value) return null
+  if (value instanceof Date) return value
+  if (
+    typeof value === 'object' &&
+    value !== null &&
+    'toDate' in value &&
+    typeof (value as { toDate: () => Date }).toDate === 'function'
+  ) {
+    return (value as { toDate: () => Date }).toDate()
+  }
+  if (typeof value === 'string') {
+    const parsed = new Date(value)
+    if (!Number.isNaN(parsed.getTime())) return parsed
+  }
+  return null
+}
+
 /**
  * Fetches paginated animals from Firestore using Admin SDK.
  * Filters by village, species, and vaccine status.
@@ -39,11 +57,17 @@ export async function getAnimals(filters: {
     }
 
     const snap = await q.get()
+    const now = new Date()
     const data = snap.docs.slice(0, animalsPerPage).map((d) => {
       const data = d.data()
+      const purgeAt = toDate(data.accountPurgeAt)
+      const shouldRedactOwner = purgeAt !== null && purgeAt.getTime() <= now.getTime()
+
       return {
         id: d.id,
         ...data,
+        ownerName: shouldRedactOwner ? 'Deleted User' : (data.ownerName ?? 'Unknown'),
+        ownerId: shouldRedactOwner ? 'REDACTED' : (data.ownerId ?? data.ownerUid ?? ''),
         nextVaccineDate: data.nextVaccineDate?.toDate().toISOString() || new Date().toISOString(),
         registeredAt: data.registeredAt?.toDate().toISOString() || new Date().toISOString(),
       } as Animal

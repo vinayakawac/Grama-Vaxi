@@ -72,7 +72,8 @@ fun TermsAndConditionsScreen(
                     "2. Data ownership: You own the data you submit. We use it to provide services and alerts.\n" +
                     "3. Notifications: Alerts are informational and do not replace professional veterinary advice.\n" +
                     "4. Account security: Keep your device and login details secure.\n" +
-                    "5. Service changes: Features may change to improve reliability and performance.",
+                    "5. Account deletion retention: When you delete your account, app access is removed immediately and your identity/credential info shown in the admin dashboard is removed after 15 days.\n" +
+                    "6. Service changes: Features may change to improve reliability and performance.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -83,7 +84,7 @@ fun TermsAndConditionsScreen(
                 color = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "Deleting your account removes your profile and stored data. This action cannot be undone.",
+                text = "Deleting your account removes app access immediately. Identity and credential information shown in the admin dashboard is removed after 15 days.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -116,7 +117,7 @@ fun TermsAndConditionsScreen(
             onDismissRequest = { showDeleteDialog = false },
             title = { Text("Delete account?") },
             text = {
-                Text("This will permanently delete your account and all data. This action cannot be undone.")
+                Text("This will remove your account access now. Admin dashboard identity/credential information linked to your records is removed after 15 days.")
             },
             confirmButton = {
                 TextButton(
