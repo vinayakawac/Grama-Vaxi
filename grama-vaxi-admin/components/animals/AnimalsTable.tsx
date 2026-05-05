@@ -30,6 +30,7 @@ export function AnimalsTable() {
   const [cursors, setCursors] = useState<Array<string | null>>([null])
   const [currentPage, setCurrentPage] = useState(0)
   const [hasMore, setHasMore] = useState(false)
+  const [deletingAnimalId, setDeletingAnimalId] = useState<string | null>(null)
   
   const [editingAnimal, setEditingAnimal] = useState<Animal | null>(null)
   const [isEditOpen, setIsEditOpen] = useState(false)
@@ -68,12 +69,16 @@ export function AnimalsTable() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this animal record?')) return
+
+    setDeletingAnimalId(id)
     try {
       await deleteAnimal(id)
       toast.success('Animal record deleted')
       fetchAnimals(currentPage)
     } catch (error) {
       toast.error('Failed to delete record')
+    } finally {
+      setDeletingAnimalId(null)
     }
   }
 
@@ -132,27 +137,34 @@ export function AnimalsTable() {
         id: 'actions',
         header: () => <div className="text-right">Actions</div>,
         cell: ({ row }) => (
-          <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex items-center justify-end gap-1">
             <button
               onClick={() => {
                 setEditingAnimal(row.original)
                 setIsEditOpen(true)
               }}
+              title="Edit animal"
               className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
             >
               <Pencil className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => handleDelete(row.original.id)}
-              className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+              title="Delete animal"
+              disabled={deletingAnimalId === row.original.id}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <Trash2 className="h-3.5 w-3.5" />
+              {deletingAnimalId === row.original.id ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Trash2 className="h-3.5 w-3.5" />
+              )}
             </button>
           </div>
         ),
       },
     ],
-    [currentPage]
+    [currentPage, deletingAnimalId]
   )
 
   const table = useReactTable({

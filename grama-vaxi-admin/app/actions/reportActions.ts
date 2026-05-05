@@ -33,3 +33,17 @@ export async function bulkMarkReviewed(reportIds: string[]): Promise<void> {
     throw new Error('Failed to perform bulk update')
   }
 }
+
+/**
+ * Deletes a single report record.
+ * This is a Server Action that can be called directly from client components.
+ */
+export async function deleteReport(reportId: string): Promise<void> {
+  try {
+    const reportRef = adminDb.collection('reports').doc(reportId)
+    await reportRef.delete()
+  } catch (error) {
+    console.error('Error deleting report:', error)
+    throw new Error('Failed to delete report')
+  }
+}

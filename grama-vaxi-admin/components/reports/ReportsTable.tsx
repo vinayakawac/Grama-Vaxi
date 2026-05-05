@@ -15,9 +15,13 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { CheckCircle, Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { CheckCircle, Loader2, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react'
 import { useEffect, useState, useMemo } from 'react'
-import { markReportReviewed, bulkMarkReviewed } from '@/app/actions/reportActions'
+import {
+  markReportReviewed,
+  bulkMarkReviewed,
+  deleteReport,
+} from '@/app/actions/reportActions'
 import { useFiltersStore } from '@/store/filters'
 import type { DiseaseReport } from '@/types'
 import { toast } from 'sonner'
@@ -30,6 +34,7 @@ export function ReportsTable() {
   const [currentPage, setCurrentPage] = useState(0)
   const [hasMore, setHasMore] = useState(false)
   const [selectedRows, setSelectedRows] = useState<Record<string, boolean>>({})
+  const [deletingReportId, setDeletingReportId] = useState<string | null>(null)
 
   const fetchReports = async (page: number) => {
     setIsLoading(true)
@@ -84,6 +89,21 @@ export function ReportsTable() {
       fetchReports(currentPage)
     } catch (error) {
       toast.error('Bulk update failed')
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this report?')) return
+
+    setDeletingReportId(id)
+    try {
+      await deleteReport(id)
+      toast.success('Report deleted')
+      fetchReports(currentPage)
+    } catch (error) {
+      toast.error('Failed to delete report')
+    } finally {
+      setDeletingReportId(null)
     }
   }
 
@@ -162,7 +182,7 @@ export function ReportsTable() {
         id: 'actions',
         header: () => <div className="text-right">Action</div>,
         cell: ({ row }) => (
-          <div className="text-right">
+          <div className="flex items-center justify-end gap-2">
             {row.original.status === 'PENDING' && (
               <button
                 onClick={() => handleReview(row.original.id)}
@@ -172,11 +192,24 @@ export function ReportsTable() {
                 Review
               </button>
             )}
+
+            <button
+              onClick={() => handleDelete(row.original.id)}
+              disabled={deletingReportId === row.original.id}
+              className="inline-flex h-7 items-center gap-1 rounded-md border border-destructive/25 px-2.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {deletingReportId === row.original.id ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <Trash2 className="h-3 w-3" />
+              )}
+              Delete
+            </button>
           </div>
         ),
       },
     ],
-    [currentPage]
+    [currentPage, deletingReportId]
   )
 
   const table = useReactTable({
