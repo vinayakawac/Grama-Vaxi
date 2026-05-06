@@ -14,4 +14,14 @@ object DateUtils {
         val millis = TimeUnit.DAYS.toMillis(epochDay)
         return SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(millis))
     }
+
+    fun parseDateTimeToEpoch(date: String?, time: String?): Long? {
+        if (date == null || time == null) return null
+        return try {
+            val format = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+            format.parse("$date $time")?.time
+        } catch (e: Exception) {
+            null
+        }
+    }
 }

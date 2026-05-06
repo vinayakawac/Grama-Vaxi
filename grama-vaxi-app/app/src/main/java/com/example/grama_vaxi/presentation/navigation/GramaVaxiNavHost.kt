@@ -227,6 +227,7 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
 
             composable(NavRoutes.CampQrScanner) {
                 CampQrScannerScreen(
+                    ownerUid = authState.session.userUid,
                     onScanned = { payload ->
                         navController.navigate(NavRoutes.campQrResult(Uri.encode(payload))) {
                             popUpTo(NavRoutes.CampQrScanner) { inclusive = true }

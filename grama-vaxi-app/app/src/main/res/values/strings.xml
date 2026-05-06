@@ -68,6 +68,10 @@
     <string name="camp_qr_open_alerts">Open alerts</string>
     <string name="camp_qr_schedule">Camp schedule</string>
     <string name="date">Date</string>
+    <string name="align_qr_hint">Align QR code to fill inside the frame</string>
+    <string name="choose_image">Choose image</string>
+    <string name="camera_permission_denied">Camera permission is required to scan QR codes</string>
+    <string name="no_qr_found">No QR code found in the selected image</string>
 
     <!-- Profile -->
     <string name="add_contact_information">Add contact information</string>

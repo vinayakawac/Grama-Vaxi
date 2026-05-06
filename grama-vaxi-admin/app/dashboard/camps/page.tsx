@@ -51,10 +51,6 @@ export default function CampsPage() {
               The dashboard now focuses on the active history view and the new village QR scheduler. The old alert broadcaster is kept only as a future enhancement.
             </p>
           </div>
-
-          <div className="rounded-2xl border border-grama-100 bg-white px-4 py-3 text-sm text-muted-foreground shadow-sm">
-            Use page 1 for analytics and page 2 to create the QR code sent to the Android app.
-          </div>
         </div>
 
         <div className="mt-6 flex flex-wrap gap-3">

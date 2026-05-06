@@ -7,11 +7,13 @@ import com.example.grama_vaxi.data.repository.AuthRepositoryImpl
 import com.example.grama_vaxi.data.repository.ReportRepositoryImpl
 import com.example.grama_vaxi.data.repository.SyncRepositoryImpl
 import com.example.grama_vaxi.data.repository.SyncSchedulerImpl
+import com.example.grama_vaxi.data.repository.CampReminderSchedulerImpl
 import com.example.grama_vaxi.data.repository.VaccineReminderSchedulerImpl
 import com.example.grama_vaxi.domain.repository.AiClassifierRepository
 import com.example.grama_vaxi.domain.repository.AlertRepository
 import com.example.grama_vaxi.domain.repository.AnimalRepository
 import com.example.grama_vaxi.domain.repository.AuthRepository
+import com.example.grama_vaxi.domain.repository.CampReminderScheduler
 import com.example.grama_vaxi.domain.repository.ReportRepository
 import com.example.grama_vaxi.domain.repository.SyncRepository
 import com.example.grama_vaxi.domain.repository.SyncScheduler
@@ -57,4 +59,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindVaccineReminderScheduler(impl: VaccineReminderSchedulerImpl): VaccineReminderScheduler
+
+    @Binds
+    @Singleton
+    abstract fun bindCampReminderScheduler(impl: CampReminderSchedulerImpl): CampReminderScheduler
 }

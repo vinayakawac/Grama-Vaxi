@@ -5,8 +5,10 @@ import com.example.grama_vaxi.data.local.dao.SyncQueueDao
 import com.example.grama_vaxi.data.local.entity.SyncQueueEntity
 import com.example.grama_vaxi.data.local.mapper.toDomain
 import com.example.grama_vaxi.data.local.mapper.toEntity
+import com.example.grama_vaxi.domain.model.AlertLevel
 import com.example.grama_vaxi.domain.model.HealthAlert
 import com.example.grama_vaxi.domain.repository.AlertRepository
+import com.example.grama_vaxi.domain.repository.CampReminderScheduler
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.util.Date
 import java.util.UUID
 import javax.inject.Inject
@@ -23,7 +26,8 @@ import javax.inject.Singleton
 class AlertRepositoryImpl @Inject constructor(
     private val alertDao: AlertDao,
     private val syncQueueDao: SyncQueueDao,
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val campReminderScheduler: CampReminderScheduler
 ) : AlertRepository {
 
     override fun observeAlerts(ownerUid: String): Flow<List<HealthAlert>> =
@@ -62,6 +66,40 @@ class AlertRepositoryImpl @Inject constructor(
                     createdAt = System.currentTimeMillis()
                 )
             )
+        }
+    }
+
+    override suspend fun saveScannedAlert(ownerUid: String, payload: String): Result<Unit> = runCatching {
+        withContext(Dispatchers.IO) {
+            val json = JSONObject(payload)
+            if (json.optString("type") != "camp-schedule") {
+                throw IllegalArgumentException("Invalid QR code type")
+            }
+
+            val alertId = json.optString("campId").takeIf { it.isNotBlank() } ?: UUID.randomUUID().toString()
+            val village = json.optString("village")
+            val date = json.optString("date")
+            val time = json.optString("time")
+            val location = json.optString("location")
+            val services = json.optString("services")
+            val message = json.optString("message")
+
+            val alert = HealthAlert(
+                id = alertId,
+                ownerUid = ownerUid,
+                title = "Health Camp: $village",
+                message = message.takeIf { !it.isNullOrBlank() } ?: "Vaccination services for $services at $location",
+                level = AlertLevel.INFO,
+                createdAt = System.currentTimeMillis(),
+                isRead = false,
+                targetVillage = date, // Placeholder for date
+                campLocation = location,
+                campTime = time, // Placeholder for time
+                synced = false
+            )
+
+            alertDao.upsert(alert.toEntity())
+            campReminderScheduler.scheduleCampReminder(alert)
         }
     }
 
