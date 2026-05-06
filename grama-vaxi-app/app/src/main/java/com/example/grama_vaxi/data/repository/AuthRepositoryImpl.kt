@@ -60,6 +60,25 @@ class AuthRepositoryImpl @Inject constructor(
             age = age,
             roleLabel = roleLabel
         )
+
+        firebaseAuth.currentUser?.let { user ->
+            val profileUpdate = mapOf(
+                "name" to userName,
+                "phone" to phoneNumber,
+                "village" to location,
+                "updatedAt" to Timestamp.now()
+            )
+
+            runCatching {
+                FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(user.uid)
+                    .set(profileUpdate, SetOptions.merge())
+                    .await()
+            }
+        }
+
+        notificationTokenSyncManager.syncCurrentToken()
     }
 
     override suspend fun sendOtp(phoneNumber: String): Result<String> {
@@ -164,6 +183,25 @@ class AuthRepositoryImpl @Inject constructor(
                             email = user.email ?: "",
                             userName = user.displayName ?: ""
                         )
+                        runCatching {
+                            FirebaseFirestore.getInstance()
+                                .collection("users")
+                                .document(user.uid)
+                                .get()
+                                .await()
+                                .getString("village")
+                                ?.takeIf { it.isNotBlank() }
+                                ?.let { village ->
+                                    sessionLocalDataSource.updateProfile(
+                                        userName = user.displayName ?: "",
+                                        location = village,
+                                        email = user.email ?: "",
+                                        phoneNumber = user.phoneNumber ?: "",
+                                        age = "",
+                                        roleLabel = UserRole.FARMER.name
+                                    )
+                                }
+                        }
                         cont.resume(Result.success(Pair(SessionState(
                             isLoggedIn = true,
                             userUid = user.uid,

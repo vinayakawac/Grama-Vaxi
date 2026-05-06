@@ -11,7 +11,7 @@ export interface Animal {
   breed: string
   ageMonths: number
   photoUrl: string
-  nextVaccineDate: string
+  nextVaccineDate: string | null
   vaccineStatus: VaccineStatus
   registeredAt: string
 }

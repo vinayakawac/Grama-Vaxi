@@ -10,6 +10,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.grama_vaxi.MainActivity
 import com.example.grama_vaxi.R
+import com.example.grama_vaxi.data.local.dao.AlertDao
+import com.example.grama_vaxi.data.local.entity.AlertEntity
 import com.example.grama_vaxi.data.remote.notifications.NotificationTokenSyncManager
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -18,6 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -25,6 +28,9 @@ class GramaVaxiMessagingService : FirebaseMessagingService() {
 
     @Inject
     lateinit var tokenSyncManager: NotificationTokenSyncManager
+
+    @Inject
+    lateinit var alertDao: AlertDao
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -42,9 +48,44 @@ class GramaVaxiMessagingService : FirebaseMessagingService() {
         val notification = message.notification
         val title = notification?.title ?: "Camp Alert - Grama-Vaxi"
         val body = notification?.body ?: "New update from veterinary officer"
+        val data = message.data
+
+        // Extract data from FCM message
+        val campId = data["campId"] ?: ""
+        val village = data["village"] ?: ""
+        val date = data["date"] ?: ""
+        val time = data["time"] ?: ""
+        val type = data["type"] ?: "CAMP_ALERT"
+
+        // Generate unique alert ID
+        val alertId = UUID.randomUUID().toString()
+
+        // Save alert to local database
+        serviceScope.launch {
+            try {
+                val alertEntity = AlertEntity(
+                    id = alertId,
+                    ownerUid = "all", // Admin broadcasts to all
+                    title = title,
+                    message = body,
+                    level = "INFO",
+                    createdAt = System.currentTimeMillis(),
+                    isRead = false,
+                    targetVillage = village.ifEmpty { null },
+                    campLocation = null,
+                    campTime = time.ifEmpty { null },
+                    synced = true // Mark as synced since it came from FCM
+                )
+                alertDao.upsert(alertEntity)
+            } catch (e: Exception) {
+                // Log error but don't crash
+                android.util.Log.e("GramaVaxiMessagingService", "Failed to save alert to database", e)
+            }
+        }
 
         val launchIntent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra("alertId", alertId)
         }
 
         val pendingIntent = PendingIntent.getActivity(

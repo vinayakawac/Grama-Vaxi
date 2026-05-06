@@ -7,6 +7,7 @@ import com.example.grama_vaxi.data.repository.AuthRepositoryImpl
 import com.example.grama_vaxi.data.repository.ReportRepositoryImpl
 import com.example.grama_vaxi.data.repository.SyncRepositoryImpl
 import com.example.grama_vaxi.data.repository.SyncSchedulerImpl
+import com.example.grama_vaxi.data.repository.VaccineReminderSchedulerImpl
 import com.example.grama_vaxi.domain.repository.AiClassifierRepository
 import com.example.grama_vaxi.domain.repository.AlertRepository
 import com.example.grama_vaxi.domain.repository.AnimalRepository
@@ -14,6 +15,7 @@ import com.example.grama_vaxi.domain.repository.AuthRepository
 import com.example.grama_vaxi.domain.repository.ReportRepository
 import com.example.grama_vaxi.domain.repository.SyncRepository
 import com.example.grama_vaxi.domain.repository.SyncScheduler
+import com.example.grama_vaxi.domain.repository.VaccineReminderScheduler
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -51,4 +53,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindAiClassifierRepository(impl: AiClassifierRepositoryImpl): AiClassifierRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindVaccineReminderScheduler(impl: VaccineReminderSchedulerImpl): VaccineReminderScheduler
 }

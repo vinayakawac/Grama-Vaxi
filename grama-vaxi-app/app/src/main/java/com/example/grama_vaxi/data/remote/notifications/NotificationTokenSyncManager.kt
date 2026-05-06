@@ -3,6 +3,7 @@ package com.example.grama_vaxi.data.remote.notifications
 import android.util.Log
 import com.example.grama_vaxi.data.local.preferences.SessionLocalDataSource
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.tasks.await
@@ -22,7 +23,16 @@ class NotificationTokenSyncManager @Inject constructor(
                 ?: throw IllegalStateException("User must be signed in before syncing FCM token")
 
             val session = sessionLocalDataSource.sessionFlow.first()
-            val village = session.location.trim()
+            val village = session.location.trim().ifBlank {
+                FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(user.uid)
+                    .get()
+                    .await()
+                    .getString("village")
+                    .orEmpty()
+                    .trim()
+            }
             if (village.isBlank()) {
                 throw IllegalStateException("Village/location is missing in session. Update profile first.")
             }

@@ -7,10 +7,14 @@ import com.example.grama_vaxi.data.local.mapper.toDomain
 import com.example.grama_vaxi.data.local.mapper.toEntity
 import com.example.grama_vaxi.domain.model.HealthAlert
 import com.example.grama_vaxi.domain.repository.AlertRepository
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.util.Date
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -18,7 +22,8 @@ import javax.inject.Singleton
 @Singleton
 class AlertRepositoryImpl @Inject constructor(
     private val alertDao: AlertDao,
-    private val syncQueueDao: SyncQueueDao
+    private val syncQueueDao: SyncQueueDao,
+    private val firestore: FirebaseFirestore
 ) : AlertRepository {
 
     override fun observeAlerts(ownerUid: String): Flow<List<HealthAlert>> =
@@ -57,6 +62,51 @@ class AlertRepositoryImpl @Inject constructor(
                     createdAt = System.currentTimeMillis()
                 )
             )
+        }
+    }
+
+    /**
+     * Fetches alerts from Firestore that were created within the last 30 days
+     * and syncs them to the local Room database.
+     * This ensures alerts sent from the admin dashboard are available offline.
+     */
+    suspend fun syncAlertsFromFirestore(ownerUid: String): Result<Unit> = runCatching {
+        withContext(Dispatchers.IO) {
+            // Use a Date so Firestore compares it against the Timestamp field correctly.
+            // Using a Long would cause a type mismatch and return zero results.
+            val thirtyDaysAgo = Date(System.currentTimeMillis() - (30L * 24 * 60 * 60 * 1000))
+
+            val snapshot = firestore.collection("alerts")
+                .whereEqualTo("ownerUid", ownerUid)
+                .whereGreaterThanOrEqualTo("createdAt", thirtyDaysAgo)
+                .get()
+                .await()
+
+            snapshot.documents.forEach { doc ->
+                val data = doc.data ?: return@forEach
+                // createdAt is stored as a Firestore Timestamp by the admin dashboard.
+                // Cast to Timestamp first; fall back to a raw Number (epoch ms) for
+                // backwards-compatibility with any locally-created alerts.
+                val createdAtMs = when (val raw = data["createdAt"]) {
+                    is Timestamp -> raw.seconds * 1000L + raw.nanoseconds / 1_000_000L
+                    is Number    -> raw.toLong()
+                    else         -> System.currentTimeMillis()
+                }
+                val alertEntity = com.example.grama_vaxi.data.local.entity.AlertEntity(
+                    id = doc.id,
+                    ownerUid = data["ownerUid"] as? String ?: ownerUid,
+                    title = data["title"] as? String ?: "Alert",
+                    message = data["message"] as? String ?: "",
+                    level = data["level"] as? String ?: "INFO",
+                    createdAt = createdAtMs,
+                    isRead = data["isRead"] as? Boolean ?: false,
+                    targetVillage = data["village"] as? String,
+                    campLocation = data["campLocation"] as? String,
+                    campTime = data["campTime"] as? String,
+                    synced = true
+                )
+                alertDao.upsert(alertEntity)
+            }
         }
     }
 }

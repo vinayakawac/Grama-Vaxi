@@ -68,7 +68,15 @@ export async function getAnimals(filters: {
         ...data,
         ownerName: shouldRedactOwner ? 'Deleted User' : (data.ownerName ?? 'Unknown'),
         ownerId: shouldRedactOwner ? 'REDACTED' : (data.ownerId ?? data.ownerUid ?? ''),
-        nextVaccineDate: data.nextVaccineDate?.toDate().toISOString() || new Date().toISOString(),
+        // If nextVaccineDate is absent or is the epoch sentinel (Timestamp(0,0)), return null
+        // so the UI shows "Not scheduled" instead of "01/01/1970" or today's date.
+        nextVaccineDate: (() => {
+          const raw = data.nextVaccineDate
+          if (!raw) return null
+          const d = typeof raw.toDate === 'function' ? raw.toDate() : new Date(raw)
+          if (isNaN(d.getTime()) || d.getTime() === 0) return null
+          return d.toISOString()
+        })(),
         registeredAt: data.registeredAt?.toDate().toISOString() || new Date().toISOString(),
       } as Animal
     })

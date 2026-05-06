@@ -15,10 +15,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.grama_vaxi.data.repository.FirebaseActivityHolder
 import com.example.grama_vaxi.data.remote.notifications.NotificationTokenSyncManager
 import com.example.grama_vaxi.domain.model.AppTheme
+import com.example.grama_vaxi.domain.repository.AlertRepository
 import com.example.grama_vaxi.domain.repository.SyncScheduler
+import com.example.grama_vaxi.domain.repository.VaccineReminderScheduler
 import com.example.grama_vaxi.presentation.navigation.GramaVaxiNavHost
 import com.example.grama_vaxi.presentation.viewmodel.AuthViewModel
 import com.example.grama_vaxi.ui.theme.GramaVaxiTheme
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +38,15 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var notificationTokenSyncManager: NotificationTokenSyncManager
 
+    @Inject
+    lateinit var vaccineReminderScheduler: VaccineReminderScheduler
+
+    @Inject
+    lateinit var alertRepository: AlertRepository
+
+    @Inject
+    lateinit var firebaseAuth: FirebaseAuth
+
     private val activityScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val notificationsPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -49,9 +61,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         FirebaseActivityHolder.activity = this
         syncScheduler.enqueuePeriodicSync()
+        vaccineReminderScheduler.scheduleVaccineReminders()
         requestNotificationPermissionIfNeeded()
         activityScope.launch {
             notificationTokenSyncManager.syncCurrentToken()
+            // Sync alerts from Firestore for the current user
+            val currentUser = firebaseAuth.currentUser
+            if (currentUser != null) {
+                (alertRepository as? com.example.grama_vaxi.data.repository.AlertRepositoryImpl)?.syncAlertsFromFirestore(currentUser.uid)
+            }
         }
         enableEdgeToEdge()
         setContent {
