@@ -7,6 +7,7 @@ import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import QRCode from 'react-qr-code'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -90,7 +91,6 @@ export function CampScheduleForm({ onSuccess }: CampScheduleFormProps) {
   }), [campId, village, date, time, location, services, message])
 
   const payloadJson = JSON.stringify(payload)
-  const qrCodeSrc = `https://chart.googleapis.com/chart?chs=320x320&cht=qr&chl=${encodeURIComponent(payloadJson)}`
 
   const onSubmit = async (data: CampScheduleFormValues) => {
     setIsSubmitting(true)
@@ -210,12 +210,10 @@ export function CampScheduleForm({ onSuccess }: CampScheduleFormProps) {
           <CardTitle className="text-base">QR code preview</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="rounded-2xl border border-dashed border-border bg-muted/20 p-4">
-            <img
-              src={qrCodeSrc}
-              alt="Camp schedule QR code"
-              className="mx-auto h-auto w-full max-w-[320px] rounded-xl bg-white p-4 shadow-sm"
-            />
+          <div className="rounded-2xl border border-dashed border-border bg-muted/20 p-4 flex justify-center">
+            <div className="rounded-xl bg-white p-4 shadow-sm">
+              <QRCode value={payloadJson} size={256} level="M" />
+            </div>
           </div>
 
           <div className="space-y-2 rounded-xl border border-border bg-background p-4 text-sm">
