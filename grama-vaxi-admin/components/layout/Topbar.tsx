@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 
 const pageTitles: Record<string, string> = {
   '/dashboard': 'Dashboard Overview',
-  '/dashboard/camps': 'Camp Alert Management',
+  '/dashboard/camps': 'Camp Planning Hub',
   '/dashboard/reports': 'Disease Reports',
   '/dashboard/animals': 'Animal Management',
   '/dashboard/settings': 'Notification Settings',

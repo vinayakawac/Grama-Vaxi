@@ -1,5 +1,6 @@
 package com.example.grama_vaxi.presentation.navigation
 
+import android.net.Uri
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountCircle
@@ -33,6 +34,8 @@ import com.example.grama_vaxi.presentation.screens.farmer.AnimalDetailScreen
 import com.example.grama_vaxi.presentation.screens.farmer.AnimalLedgerScreen
 import com.example.grama_vaxi.presentation.screens.farmer.AppPermissionsScreen
 import com.example.grama_vaxi.presentation.screens.farmer.CampAlertScreen
+import com.example.grama_vaxi.presentation.screens.farmer.CampQrResultScreen
+import com.example.grama_vaxi.presentation.screens.farmer.CampQrScannerScreen
 import com.example.grama_vaxi.presentation.screens.farmer.DiseaseReportScreen
 import com.example.grama_vaxi.presentation.screens.farmer.EditProfileScreen
 import com.example.grama_vaxi.presentation.screens.farmer.HomeDashboardScreen
@@ -222,6 +225,30 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
                 )
             }
 
+            composable(NavRoutes.CampQrScanner) {
+                CampQrScannerScreen(
+                    onScanned = { payload ->
+                        navController.navigate(NavRoutes.campQrResult(Uri.encode(payload))) {
+                            popUpTo(NavRoutes.CampQrScanner) { inclusive = true }
+                        }
+                    },
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
+            composable(
+                route = NavRoutes.CampQrResultPattern,
+                arguments = listOf(navArgument("payload") { type = NavType.StringType })
+            ) { entry ->
+                val payload = Uri.decode(entry.arguments?.getString("payload").orEmpty())
+                CampQrResultScreen(
+                    payload = payload,
+                    onBack = { navController.popBackStack() },
+                    onOpenCalendar = { navController.navigate(NavRoutes.VaccineCalendar) },
+                    onOpenAlerts = { navController.navigate(NavRoutes.Notifications) }
+                )
+            }
+
             composable(NavRoutes.VaccineCalendar) {
                 val viewModel: VaccineCalendarViewModel = hiltViewModel()
                 val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -232,7 +259,10 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
                     }
                 }
 
-                VaccineCalendarScreen(uiState = uiState)
+                VaccineCalendarScreen(
+                    uiState = uiState,
+                    onScanCampQr = { navController.navigate(NavRoutes.CampQrScanner) }
+                )
             }
 
             composable(NavRoutes.Notifications) {
@@ -249,7 +279,8 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
                     uiState = uiState,
                     onMarkRead = viewModel::markAsRead,
                     onOpenAlert = { alertId -> navController.navigate(NavRoutes.campAlert(alertId)) },
-                    onOpenVaccine = { animalId -> navController.navigate(NavRoutes.animalDetail(animalId)) }
+                    onOpenVaccine = { animalId -> navController.navigate(NavRoutes.animalDetail(animalId)) },
+                    onScanCampQr = { navController.navigate(NavRoutes.CampQrScanner) }
                 )
             }
 

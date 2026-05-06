@@ -22,6 +22,11 @@ object NavRoutes {
     const val AppPermissions = "app_permissions"
     const val TermsConditions = "terms_conditions"
 
+    const val CampQrScanner = "camp_qr_scanner"
+
+    const val CampQrResultPattern = "camp_qr_result/{payload}"
+    fun campQrResult(payload: String): String = "camp_qr_result/$payload"
+
     const val CampAlertPattern = "camp_alert/{alertId}"
     fun campAlert(alertId: String): String = "camp_alert/$alertId"
 

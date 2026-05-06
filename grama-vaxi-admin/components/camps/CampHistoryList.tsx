@@ -14,6 +14,8 @@ interface CampHistoryListProps {
 
 function dispatchTone(status: CampAlert['dispatchStatus']) {
   switch (status) {
+    case 'SCHEDULED':
+      return 'bg-emerald-50 text-emerald-700'
     case 'SENT':
       return 'bg-emerald-50 text-emerald-700'
     case 'PARTIAL':

@@ -26,7 +26,7 @@ export interface CampAlert {
   createdBy: string
   createdAt: string
   acknowledgedCount: number
-  dispatchStatus?: 'QUEUED' | 'SENT' | 'PARTIAL' | 'NO_RECIPIENTS' | 'SKIPPED_DISABLED'
+  dispatchStatus?: 'QUEUED' | 'SENT' | 'PARTIAL' | 'NO_RECIPIENTS' | 'SKIPPED_DISABLED' | 'SCHEDULED'
   deliveredCount?: number
   failedCount?: number
   dispatchedAt?: string

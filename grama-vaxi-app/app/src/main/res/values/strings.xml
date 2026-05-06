@@ -60,6 +60,14 @@
     <string name="scheduled_vaccinations">Scheduled Vaccinations</string>
     <string name="notifications">Notifications</string>
     <string name="mark_read">Mark Read</string>
+    <string name="scan_camp_qr">Scan Camp QR</string>
+    <string name="scan_camp_qr_hint">Use the camera scanner to open a camp schedule generated in the admin dashboard.</string>
+    <string name="camp_qr_result">Camp QR Result</string>
+    <string name="camp_qr_payload_unknown">The QR code could not be decoded into a camp schedule.</string>
+    <string name="camp_qr_open_calendar">Open calendar</string>
+    <string name="camp_qr_open_alerts">Open alerts</string>
+    <string name="camp_qr_schedule">Camp schedule</string>
+    <string name="date">Date</string>
 
     <!-- Profile -->
     <string name="add_contact_information">Add contact information</string>
