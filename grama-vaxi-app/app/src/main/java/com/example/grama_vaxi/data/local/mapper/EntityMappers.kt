@@ -51,6 +51,7 @@ fun AlertEntity.toDomain(): HealthAlert = HealthAlert(
     targetVillage = targetVillage,
     campLocation = campLocation,
     campTime = campTime,
+    campDateEpochDay = campDateEpochDay,
     synced = synced
 )
 
@@ -65,6 +66,7 @@ fun HealthAlert.toEntity(): AlertEntity = AlertEntity(
     targetVillage = targetVillage,
     campLocation = campLocation,
     campTime = campTime,
+    campDateEpochDay = campDateEpochDay,
     synced = synced
 )
 

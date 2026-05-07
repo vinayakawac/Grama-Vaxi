@@ -21,7 +21,9 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): GramaVaxiDatabase =
-        Room.databaseBuilder(context, GramaVaxiDatabase::class.java, "grama_vaxi.db").build()
+        Room.databaseBuilder(context, GramaVaxiDatabase::class.java, "grama_vaxi.db")
+            .fallbackToDestructiveMigration()
+            .build()
 
     @Provides
     fun provideAnimalDao(database: GramaVaxiDatabase): AnimalDao = database.animalDao()

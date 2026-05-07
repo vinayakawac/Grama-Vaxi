@@ -19,6 +19,11 @@ interface AnimalDao {
     )
     fun observeUpcomingVaccines(ownerUid: String, fromEpochDay: Long): Flow<List<AnimalEntity>>
 
+    @Query(
+        "SELECT * FROM animals WHERE (ownerUid = :ownerUid OR :ownerUid = '*') AND nextVaccineEpochDay = :epochDay"
+    )
+    suspend fun getVaccinesForDate(ownerUid: String, epochDay: Long): List<AnimalEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(entity: AnimalEntity)
 

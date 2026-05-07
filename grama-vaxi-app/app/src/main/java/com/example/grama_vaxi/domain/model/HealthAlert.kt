@@ -11,5 +11,6 @@ data class HealthAlert(
     val targetVillage: String? = null,
     val campLocation: String? = null,
     val campTime: String? = null,
+    val campDateEpochDay: Long? = null,
     val synced: Boolean = false
 )

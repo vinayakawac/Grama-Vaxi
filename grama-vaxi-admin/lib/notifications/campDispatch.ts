@@ -12,6 +12,7 @@ interface CampDispatchInput {
   village: string
   date: Date
   time: string
+  location: string
   message?: string
 }
 
@@ -167,6 +168,9 @@ export async function dispatchCampAlert(
         isRead: false,
         village: input.village,
         campId: input.campId,
+        campDate: normalizedDate,
+        campTime: input.time,
+        campLocation: input.location,
         createdAt: new Date(),
       })
     })

@@ -15,5 +15,6 @@ data class AlertEntity(
     val targetVillage: String?,
     val campLocation: String?,
     val campTime: String?,
+    val campDateEpochDay: Long?,
     val synced: Boolean
 )

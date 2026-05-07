@@ -15,6 +15,7 @@ import com.example.grama_vaxi.data.local.entity.AlertEntity
 import com.example.grama_vaxi.data.remote.notifications.NotificationTokenSyncManager
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.example.grama_vaxi.utils.DateUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -74,6 +75,7 @@ class GramaVaxiMessagingService : FirebaseMessagingService() {
                     targetVillage = village.ifEmpty { null },
                     campLocation = null,
                     campTime = time.ifEmpty { null },
+                    campDateEpochDay = DateUtils.parseDateToEpochDay(date),
                     synced = true // Mark as synced since it came from FCM
                 )
                 alertDao.upsert(alertEntity)

@@ -16,6 +16,11 @@ interface AlertDao {
     )
     fun observeAlerts(ownerUid: String): Flow<List<AlertEntity>>
 
+    @Query(
+        "SELECT * FROM alerts WHERE (ownerUid = :ownerUid OR ownerUid = 'all') AND campDateEpochDay = :epochDay"
+    )
+    suspend fun getAlertsForDate(ownerUid: String, epochDay: Long): List<AlertEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(entity: AlertEntity)
 

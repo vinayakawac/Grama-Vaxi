@@ -262,7 +262,8 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
 
                 VaccineCalendarScreen(
                     uiState = uiState,
-                    onScanCampQr = { navController.navigate(NavRoutes.CampQrScanner) }
+                    onScanCampQr = { navController.navigate(NavRoutes.CampQrScanner) },
+                    onDateSelected = viewModel::selectDate
                 )
             }
 

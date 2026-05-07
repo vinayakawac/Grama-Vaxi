@@ -2,6 +2,7 @@ package com.example.grama_vaxi.data.repository
 
 import com.example.grama_vaxi.data.local.dao.AlertDao
 import com.example.grama_vaxi.data.local.dao.SyncQueueDao
+import com.example.grama_vaxi.data.local.entity.AlertEntity
 import com.example.grama_vaxi.data.local.entity.SyncQueueEntity
 import com.example.grama_vaxi.data.local.mapper.toDomain
 import com.example.grama_vaxi.data.local.mapper.toEntity
@@ -9,6 +10,7 @@ import com.example.grama_vaxi.domain.model.AlertLevel
 import com.example.grama_vaxi.domain.model.HealthAlert
 import com.example.grama_vaxi.domain.repository.AlertRepository
 import com.example.grama_vaxi.domain.repository.CampReminderScheduler
+import com.example.grama_vaxi.utils.DateUtils
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
@@ -92,9 +94,10 @@ class AlertRepositoryImpl @Inject constructor(
                 level = AlertLevel.INFO,
                 createdAt = System.currentTimeMillis(),
                 isRead = false,
-                targetVillage = date, // Placeholder for date
+                targetVillage = village,
                 campLocation = location,
-                campTime = time, // Placeholder for time
+                campTime = time,
+                campDateEpochDay = DateUtils.parseDateToEpochDay(date),
                 synced = false
             )
 
@@ -130,7 +133,7 @@ class AlertRepositoryImpl @Inject constructor(
                     is Number    -> raw.toLong()
                     else         -> System.currentTimeMillis()
                 }
-                val alertEntity = com.example.grama_vaxi.data.local.entity.AlertEntity(
+                val alertEntity = AlertEntity(
                     id = doc.id,
                     ownerUid = data["ownerUid"] as? String ?: ownerUid,
                     title = data["title"] as? String ?: "Alert",
@@ -141,6 +144,7 @@ class AlertRepositoryImpl @Inject constructor(
                     targetVillage = data["village"] as? String,
                     campLocation = data["campLocation"] as? String,
                     campTime = data["campTime"] as? String,
+                    campDateEpochDay = DateUtils.parseDateToEpochDay(data["campDate"] as? String),
                     synced = true
                 )
                 alertDao.upsert(alertEntity)

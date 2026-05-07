@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { Loader2, QrCode, Copy, Save } from 'lucide-react'
+import { Loader2, QrCode, Copy, Save, Plus } from 'lucide-react'
 import { z } from 'zod'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -18,12 +18,23 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
+const PREDEFINED_SERVICES = [
+  'General Vaccination',
+  'FMD Vaccination',
+  'HS/BQ Vaccination',
+  'Health Checkup',
+  'Tagging & Registration',
+  'Artificial Insemination',
+  'Other (Manual Entry)'
+]
+
 const campScheduleSchema = z.object({
   village: z.string().min(1, 'Village is required'),
   date: z.string().min(1, 'Date is required'),
   time: z.string().min(1, 'Time is required'),
   location: z.string().min(1, 'Location is required'),
   services: z.string().min(1, 'Services are required'),
+  manualService: z.string().optional(),
   message: z.string().max(200, 'Message too long').optional(),
 })
 
@@ -37,6 +48,7 @@ export function CampScheduleForm({ onSuccess }: CampScheduleFormProps) {
   const [villages, setVillages] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [campId, setCampId] = useState<string | null>(null)
+  const [isManual, setIsManual] = useState(false)
 
   const {
     register,
@@ -51,7 +63,8 @@ export function CampScheduleForm({ onSuccess }: CampScheduleFormProps) {
       date: '',
       time: '',
       location: '',
-      services: 'Vaccination drive',
+      services: 'General Vaccination',
+      manualService: '',
       message: '',
     },
   })
@@ -61,7 +74,10 @@ export function CampScheduleForm({ onSuccess }: CampScheduleFormProps) {
   const time = useWatch({ control, name: 'time' })
   const location = useWatch({ control, name: 'location' })
   const services = useWatch({ control, name: 'services' })
+  const manualService = useWatch({ control, name: 'manualService' })
   const message = useWatch({ control, name: 'message' })
+
+  const finalServices = isManual ? manualService : services
 
   useEffect(() => {
     async function fetchVillages() {
@@ -86,19 +102,23 @@ export function CampScheduleForm({ onSuccess }: CampScheduleFormProps) {
     date: date ?? '',
     time: time ?? '',
     location: location ?? '',
-    services: services ?? '',
+    services: finalServices ?? '',
     message: message ?? '',
-  }), [campId, village, date, time, location, services, message])
+  }), [campId, village, date, time, location, finalServices, message])
 
   const payloadJson = JSON.stringify(payload)
 
   const onSubmit = async (data: CampScheduleFormValues) => {
     setIsSubmitting(true)
+    const submissionData = {
+        ...data,
+        services: isManual ? data.manualService : data.services
+    }
     try {
       const response = await fetch('/api/camps/schedules', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(submissionData),
       })
 
       const result = await response.json().catch(() => ({}))
@@ -132,7 +152,10 @@ export function CampScheduleForm({ onSuccess }: CampScheduleFormProps) {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="village">Village</Label>
-              <Select onValueChange={(value: string | null) => setValue('village', value ?? '')}>
+              <Select 
+                value={village}
+                onValueChange={(value: string | null, _details: any) => setValue('village', value ?? '')}
+              >
                 <SelectTrigger id="village">
                   <SelectValue placeholder="Select a village..." />
                 </SelectTrigger>
@@ -168,7 +191,35 @@ export function CampScheduleForm({ onSuccess }: CampScheduleFormProps) {
 
             <div className="space-y-2">
               <Label htmlFor="services">Services</Label>
-              <Input id="services" placeholder="Vaccines, checkups, tagging..." {...register('services')} />
+              <Select 
+                defaultValue="General Vaccination"
+                value={services}
+                onValueChange={(value: string | null, _details: any) => {
+                    const selectedValue = value ?? ''
+                    setValue('services', selectedValue)
+                    setIsManual(selectedValue === 'Other (Manual Entry)')
+                }}
+              >
+                <SelectTrigger id="services">
+                  <SelectValue placeholder="Select service..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {PREDEFINED_SERVICES.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {isManual && (
+                  <div className="mt-2 animate-in slide-in-from-top-1">
+                      <Input 
+                        placeholder="Enter service manually..." 
+                        {...register('manualService')}
+                        className="bg-accent/20"
+                      />
+                  </div>
+              )}
               {errors.services && <p className="text-xs text-destructive">{errors.services.message}</p>}
             </div>
 
@@ -225,7 +276,7 @@ export function CampScheduleForm({ onSuccess }: CampScheduleFormProps) {
               {location || 'Location'}
             </p>
             <p className="text-muted-foreground">
-              {services || 'Services'}
+              {finalServices || 'Services'}
             </p>
           </div>
 

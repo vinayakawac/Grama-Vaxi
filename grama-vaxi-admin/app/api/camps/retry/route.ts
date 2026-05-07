@@ -53,11 +53,12 @@ export async function POST(req: NextRequest) {
       village?: string
       date?: unknown
       time?: string
+      location?: string
       message?: string
     }
 
     const parsedDate = toDate(camp.date)
-    if (!camp.village || !camp.time || !parsedDate) {
+    if (!camp.village || !camp.time || !camp.location || !parsedDate) {
       return NextResponse.json(
         { success: false, error: 'Camp data is invalid for retry' },
         { status: 400 }
@@ -78,6 +79,7 @@ export async function POST(req: NextRequest) {
       village: camp.village,
       date: parsedDate,
       time: camp.time,
+      location: camp.location,
       message: camp.message,
     })
 

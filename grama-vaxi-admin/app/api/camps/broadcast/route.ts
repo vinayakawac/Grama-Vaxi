@@ -15,10 +15,10 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { village, date, time, message } = body
+    const { village, date, time, location, message } = body
     const parsedDate = new Date(date)
 
-    if (!village || !date || Number.isNaN(parsedDate.getTime()) || !time) {
+    if (!village || !date || Number.isNaN(parsedDate.getTime()) || !time || !location) {
       return NextResponse.json(
         {
           success: false,
@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
       village,
       date: parsedDate,
       time,
+      location,
       message: message || '',
       createdAt: new Date(),
       acknowledgedCount: 0,
@@ -50,6 +51,7 @@ export async function POST(req: NextRequest) {
       village,
       date: parsedDate,
       time,
+      location,
       message,
     })
 

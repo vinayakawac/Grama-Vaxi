@@ -18,6 +18,7 @@ import com.example.grama_vaxi.domain.model.AppTheme
 import com.example.grama_vaxi.domain.repository.AlertRepository
 import com.example.grama_vaxi.domain.repository.SyncScheduler
 import com.example.grama_vaxi.domain.repository.VaccineReminderScheduler
+import com.example.grama_vaxi.domain.repository.CampReminderScheduler
 import com.example.grama_vaxi.presentation.navigation.GramaVaxiNavHost
 import com.example.grama_vaxi.presentation.viewmodel.AuthViewModel
 import com.example.grama_vaxi.ui.theme.GramaVaxiTheme
@@ -42,6 +43,9 @@ class MainActivity : AppCompatActivity() {
     lateinit var vaccineReminderScheduler: VaccineReminderScheduler
 
     @Inject
+    lateinit var campReminderScheduler: CampReminderScheduler
+
+    @Inject
     lateinit var alertRepository: AlertRepository
 
     @Inject
@@ -62,6 +66,7 @@ class MainActivity : AppCompatActivity() {
         FirebaseActivityHolder.activity = this
         syncScheduler.enqueuePeriodicSync()
         vaccineReminderScheduler.scheduleVaccineReminders()
+        campReminderScheduler.scheduleDailyAlertsDigest()
         requestNotificationPermissionIfNeeded()
         activityScope.launch {
             notificationTokenSyncManager.syncCurrentToken()
