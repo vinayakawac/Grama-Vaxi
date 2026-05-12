@@ -177,5 +177,6 @@
     <string name="select_district">Select District</string>
     <string name="select_taluk">Select Taluk</string>
     <string name="select_district_first">Select District First</string>
+    <string name="use_profile_location">Use profile location</string>
     <string name="default_web_client_id">902931902318-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com</string>
 </resources>

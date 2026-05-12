@@ -73,6 +73,8 @@ class AuthViewModel @Inject constructor(
     fun updateProfile(
         userName: String,
         location: String,
+        district: String,
+        taluk: String,
         email: String,
         phoneNumber: String,
         age: String,
@@ -82,6 +84,8 @@ class AuthViewModel @Inject constructor(
             updateProfileUseCase(
                 userName = userName,
                 location = location,
+                district = district,
+                taluk = taluk,
                 email = email,
                 phoneNumber = phoneNumber,
                 age = age,

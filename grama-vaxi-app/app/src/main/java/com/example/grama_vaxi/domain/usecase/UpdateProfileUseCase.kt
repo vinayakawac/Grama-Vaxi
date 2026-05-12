@@ -9,6 +9,8 @@ class UpdateProfileUseCase @Inject constructor(
     suspend operator fun invoke(
         userName: String,
         location: String,
+        district: String,
+        taluk: String,
         email: String,
         phoneNumber: String,
         age: String,
@@ -16,6 +18,8 @@ class UpdateProfileUseCase @Inject constructor(
     ) = authRepository.updateProfile(
         userName = userName,
         location = location,
+        district = district,
+        taluk = taluk,
         email = email,
         phoneNumber = phoneNumber,
         age = age,

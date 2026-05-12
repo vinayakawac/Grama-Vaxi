@@ -36,6 +36,8 @@ class SessionLocalDataSource @Inject constructor(
         val phone = stringPreferencesKey("phone")
         val userName = stringPreferencesKey("user_name")
         val location = stringPreferencesKey("location")
+        val district = stringPreferencesKey("district")
+        val taluk = stringPreferencesKey("taluk")
         val email = stringPreferencesKey("email")
         val age = stringPreferencesKey("age")
     }
@@ -86,6 +88,8 @@ class SessionLocalDataSource @Inject constructor(
     suspend fun updateProfile(
         userName: String,
         location: String,
+        district: String,
+        taluk: String,
         email: String,
         phoneNumber: String,
         age: String,
@@ -94,6 +98,8 @@ class SessionLocalDataSource @Inject constructor(
         context.sessionDataStore.edit { prefs ->
             prefs[Keys.userName] = userName
             prefs[Keys.location] = location
+            prefs[Keys.district] = district
+            prefs[Keys.taluk] = taluk
             prefs[Keys.email] = email
             prefs[Keys.phone] = phoneNumber
             prefs[Keys.age] = age
@@ -108,6 +114,8 @@ class SessionLocalDataSource @Inject constructor(
             prefs[Keys.phone] = ""
             prefs[Keys.userName] = ""
             prefs[Keys.location] = ""
+            prefs[Keys.district] = ""
+            prefs[Keys.taluk] = ""
             prefs[Keys.email] = ""
             prefs[Keys.age] = ""
             prefs[Keys.roleLabel] = ""
@@ -137,6 +145,8 @@ class SessionLocalDataSource @Inject constructor(
             phoneNumber = preferences[Keys.phone].orEmpty(),
             userName = preferences[Keys.userName].orEmpty(),
             location = preferences[Keys.location].orEmpty(),
+            district = preferences[Keys.district].orEmpty(),
+            taluk = preferences[Keys.taluk].orEmpty(),
             email = preferences[Keys.email].orEmpty(),
             age = preferences[Keys.age].orEmpty()
         )

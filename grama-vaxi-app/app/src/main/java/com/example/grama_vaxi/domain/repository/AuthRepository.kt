@@ -12,6 +12,8 @@ interface AuthRepository {
     suspend fun updateProfile(
         userName: String,
         location: String,
+        district: String,
+        taluk: String,
         email: String,
         phoneNumber: String,
         age: String,

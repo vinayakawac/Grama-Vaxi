@@ -47,6 +47,8 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun updateProfile(
         userName: String,
         location: String,
+        district: String,
+        taluk: String,
         email: String,
         phoneNumber: String,
         age: String,
@@ -55,6 +57,8 @@ class AuthRepositoryImpl @Inject constructor(
         sessionLocalDataSource.updateProfile(
             userName = userName,
             location = location,
+            district = district,
+            taluk = taluk,
             email = email,
             phoneNumber = phoneNumber,
             age = age,
@@ -66,6 +70,8 @@ class AuthRepositoryImpl @Inject constructor(
                 "name" to userName,
                 "phone" to phoneNumber,
                 "village" to location,
+                "district" to district,
+                "taluk" to taluk,
                 "updatedAt" to Timestamp.now()
             )
 
@@ -192,9 +198,18 @@ class AuthRepositoryImpl @Inject constructor(
                                 .getString("village")
                                 ?.takeIf { it.isNotBlank() }
                                 ?.let { village ->
+                                    val snapshot = FirebaseFirestore.getInstance()
+                                        .collection("users")
+                                        .document(user.uid)
+                                        .get()
+                                        .await()
+                                    val district = snapshot.getString("district") ?: ""
+                                    val taluk = snapshot.getString("taluk") ?: ""
                                     sessionLocalDataSource.updateProfile(
                                         userName = user.displayName ?: "",
                                         location = village,
+                                        district = district,
+                                        taluk = taluk,
                                         email = user.email ?: "",
                                         phoneNumber = user.phoneNumber ?: "",
                                         age = "",

@@ -168,7 +168,9 @@ fun SignUpScreen(
             onClick = {
                 authViewModel.updateProfile(
                     userName = name,
-                    location = village, // Use village name as primary location for matching
+                    location = village,
+                    district = district,
+                    taluk = taluk,
                     email = initialEmail,
                     phoneNumber = phone,
                     age = "", // Default empty as per requirement

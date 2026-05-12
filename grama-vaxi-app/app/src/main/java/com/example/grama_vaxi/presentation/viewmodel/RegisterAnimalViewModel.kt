@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.grama_vaxi.domain.model.Animal
 import com.example.grama_vaxi.domain.model.AnimalType
 import com.example.grama_vaxi.domain.usecase.RegisterAnimalUseCase
+import com.example.grama_vaxi.domain.repository.AuthRepository
 import com.example.grama_vaxi.utils.DateUtils
 import com.example.grama_vaxi.utils.IdGenerator
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,12 +14,14 @@ import kotlin.random.Random
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
 class RegisterAnimalViewModel @Inject constructor(
     private val registerAnimalUseCase: RegisterAnimalUseCase,
+    private val authRepository: AuthRepository,
     private val idGenerator: IdGenerator
 ) : ViewModel() {
 
@@ -55,6 +58,20 @@ class RegisterAnimalViewModel @Inject constructor(
 
     fun onTypeChanged(type: AnimalType) {
         _uiState.update { it.copy(type = type) }
+    }
+
+    fun useProfileLocation() {
+        viewModelScope.launch {
+            authRepository.sessionState().take(1).collect { session ->
+                _uiState.update { 
+                    it.copy(
+                        village = session.location,
+                        district = session.district,
+                        taluk = session.taluk
+                    )
+                }
+            }
+        }
     }
 
     fun register(ownerUid: String, onSuccess: () -> Unit) {

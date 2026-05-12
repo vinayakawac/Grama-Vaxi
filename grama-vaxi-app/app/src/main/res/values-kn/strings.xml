@@ -166,5 +166,6 @@
     <string name="select_district">ಜಿಲ್ಲೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</string>
     <string name="select_taluk">ತಾಲೂಕನ್ನು ಆಯ್ಕೆಮಾಡಿ</string>
     <string name="select_district_first">ಮೊದಲು ಜಿಲ್ಲೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</string>
+    <string name="use_profile_location">ಪ್ರೊಫೈಲ್ ಸ್ಥಳವನ್ನು ಬಳಸಿ</string>
     <string name="default_web_client_id">902931902318-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com</string>
 </resources>

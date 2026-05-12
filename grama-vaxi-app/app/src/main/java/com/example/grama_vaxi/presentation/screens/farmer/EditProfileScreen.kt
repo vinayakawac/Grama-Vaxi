@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -30,7 +31,11 @@ import androidx.compose.ui.res.stringResource
 import com.example.grama_vaxi.R
 import androidx.compose.ui.text.input.KeyboardType
 import com.example.grama_vaxi.presentation.components.AppDimens
+import com.example.grama_vaxi.presentation.components.DropdownField
+import com.example.grama_vaxi.data.local.constants.KarnatakaPlaces
 import com.example.grama_vaxi.presentation.viewmodel.AuthUiState
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,6 +44,8 @@ fun EditProfileScreen(
     onSaveProfile: (
         userName: String,
         location: String,
+        district: String,
+        taluk: String,
         email: String,
         phoneNumber: String,
         age: String,
@@ -48,14 +55,32 @@ fun EditProfileScreen(
 ) {
     var userName by rememberSaveable { mutableStateOf(uiState.session.userName) }
     var location by rememberSaveable { mutableStateOf(uiState.session.location) }
+    var district by rememberSaveable { mutableStateOf(uiState.session.district) }
+    var taluk by rememberSaveable { mutableStateOf(uiState.session.taluk) }
     var email by rememberSaveable { mutableStateOf(uiState.session.email) }
     var phoneNumber by rememberSaveable { mutableStateOf(uiState.session.phoneNumber) }
     var age by rememberSaveable { mutableStateOf(uiState.session.age) }
     var roleLabel by rememberSaveable { mutableStateOf(uiState.session.roleLabel) }
 
+    val isKannada = LocalConfiguration.current.locales[0].language == "kn"
+
+    val districtOptions = remember(isKannada) {
+        KarnatakaPlaces.districts.map { if (isKannada) it.districtKn else it.districtEn }
+    }
+
+    val selectedDistrictData = remember(district) {
+        KarnatakaPlaces.districts.find { it.districtEn == district }
+    }
+
+    val talukOptions = remember(district, isKannada) {
+        selectedDistrictData?.taluks?.map { if (isKannada) it.kn else it.en } ?: emptyList()
+    }
+
     LaunchedEffect(uiState.session) {
         userName = uiState.session.userName
         location = uiState.session.location
+        district = uiState.session.district
+        taluk = uiState.session.taluk
         email = uiState.session.email
         phoneNumber = uiState.session.phoneNumber
         age = uiState.session.age
@@ -77,6 +102,8 @@ fun EditProfileScreen(
                             onSaveProfile(
                                 userName,
                                 location,
+                                district,
+                                taluk,
                                 email,
                                 phoneNumber,
                                 age,
@@ -108,11 +135,48 @@ fun EditProfileScreen(
                 label = { Text(stringResource(R.string.user_name)) },
                 singleLine = true
             )
+
+            // District Field
+            DropdownField(
+                value = if (isKannada) {
+                    selectedDistrictData?.districtKn ?: district
+                } else district,
+                onValueChange = { localizedDistrict ->
+                    val districtEn = KarnatakaPlaces.districts.find {
+                        it.districtEn == localizedDistrict || it.districtKn == localizedDistrict
+                    }?.districtEn ?: localizedDistrict
+                    district = districtEn
+                    taluk = "" // Reset taluk
+                },
+                label = stringResource(R.string.district),
+                options = districtOptions,
+                placeholder = stringResource(R.string.select_district),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Taluk Field
+            DropdownField(
+                value = if (isKannada) {
+                    selectedDistrictData?.taluks?.find { it.en == taluk }?.kn ?: taluk
+                } else taluk,
+                onValueChange = { localizedTaluk ->
+                    val talukEn = selectedDistrictData?.taluks?.find {
+                        it.en == localizedTaluk || it.kn == localizedTaluk
+                    }?.en ?: localizedTaluk
+                    taluk = talukEn
+                },
+                label = stringResource(R.string.taluk),
+                options = talukOptions,
+                enabled = district.isNotBlank(),
+                placeholder = if (district.isNotBlank()) stringResource(R.string.select_taluk) else stringResource(R.string.select_district_first),
+                modifier = Modifier.fillMaxWidth()
+            )
+
             OutlinedTextField(
                 value = location,
                 onValueChange = { location = it },
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text(stringResource(R.string.location)) },
+                label = { Text(stringResource(R.string.village)) },
                 singleLine = true
             )
             OutlinedTextField(

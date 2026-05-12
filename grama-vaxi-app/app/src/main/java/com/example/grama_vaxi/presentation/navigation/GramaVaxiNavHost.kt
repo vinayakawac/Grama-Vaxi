@@ -219,6 +219,7 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
                     onAgeChanged = viewModel::onAgeChanged,
                     onTypeChanged = viewModel::onTypeChanged,
                     onPickPhoto = { viewModel.onPhotoChanged(null) },
+                    onUseProfileLocation = viewModel::useProfileLocation,
                     onSubmit = {
                         viewModel.register(authState.session.userUid) {
                             navController.popBackStack()

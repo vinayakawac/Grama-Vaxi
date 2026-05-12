@@ -10,6 +10,8 @@ data class SessionState(
     val phoneNumber: String = "",
     val userName: String = "",
     val location: String = "",
+    val district: String = "",
+    val taluk: String = "",
     val email: String = "",
     val age: String = ""
 )

@@ -3,16 +3,23 @@ package com.example.grama_vaxi.presentation.screens.farmer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -38,6 +45,7 @@ fun RegisterAnimalScreen(
     onAgeChanged: (Int) -> Unit,
     onTypeChanged: (com.example.grama_vaxi.domain.model.AnimalType) -> Unit,
     onPickPhoto: () -> Unit,
+    onUseProfileLocation: () -> Unit,
     onSubmit: () -> Unit
 ) {
     val isKannada = LocalConfiguration.current.locales[0].language == "kn"
@@ -53,6 +61,8 @@ fun RegisterAnimalScreen(
     val talukOptions = remember(selectedDistrictData, isKannada) {
         selectedDistrictData?.taluks?.map { if (isKannada) it.kn else it.en } ?: emptyList()
     }
+
+    var useProfileLocation by remember { mutableStateOf(false) }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -96,6 +106,26 @@ fun RegisterAnimalScreen(
                 label = stringResource(R.string.breed),
                 placeholder = stringResource(R.string.breed_hint)
             )
+        }
+
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(R.string.use_profile_location),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Switch(
+                    checked = useProfileLocation,
+                    onCheckedChange = { 
+                        useProfileLocation = it
+                        if (it) onUseProfileLocation()
+                    }
+                )
+            }
         }
 
         item {
