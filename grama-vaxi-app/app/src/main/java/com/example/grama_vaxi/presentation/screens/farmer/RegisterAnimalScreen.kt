@@ -12,11 +12,15 @@ import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import com.example.grama_vaxi.R
+import com.example.grama_vaxi.data.local.constants.KarnatakaPlaces
 import com.example.grama_vaxi.presentation.components.AnimalTypeSelector
 import com.example.grama_vaxi.presentation.components.AppDimens
+import com.example.grama_vaxi.presentation.components.DropdownField
 import com.example.grama_vaxi.presentation.components.InputField
 import com.example.grama_vaxi.presentation.components.PhotoPickerBox
 import com.example.grama_vaxi.presentation.components.PrimaryButton
@@ -28,12 +32,28 @@ fun RegisterAnimalScreen(
     uiState: RegisterAnimalUiState,
     onNameChanged: (String) -> Unit,
     onBreedChanged: (String) -> Unit,
+    onDistrictChanged: (String) -> Unit,
+    onTalukChanged: (String) -> Unit,
     onVillageChanged: (String) -> Unit,
     onAgeChanged: (Int) -> Unit,
     onTypeChanged: (com.example.grama_vaxi.domain.model.AnimalType) -> Unit,
     onPickPhoto: () -> Unit,
     onSubmit: () -> Unit
 ) {
+    val isKannada = LocalConfiguration.current.locales[0].language == "kn"
+
+    val districtOptions = remember(isKannada) {
+        KarnatakaPlaces.districts.map { if (isKannada) it.districtKn else it.districtEn }
+    }
+
+    val selectedDistrictData = remember(uiState.district) {
+        KarnatakaPlaces.districts.find { it.districtEn == uiState.district }
+    }
+
+    val talukOptions = remember(selectedDistrictData, isKannada) {
+        selectedDistrictData?.taluks?.map { if (isKannada) it.kn else it.en } ?: emptyList()
+    }
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(AppDimens.edge),
@@ -79,6 +99,41 @@ fun RegisterAnimalScreen(
         }
 
         item {
+            DropdownField(
+                value = if (isKannada) {
+                    selectedDistrictData?.districtKn ?: uiState.district
+                } else uiState.district,
+                options = districtOptions,
+                onValueChange = { localizedDistrict ->
+                    val districtEn = KarnatakaPlaces.districts.find { 
+                        it.districtEn == localizedDistrict || it.districtKn == localizedDistrict 
+                    }?.districtEn ?: localizedDistrict
+                    onDistrictChanged(districtEn)
+                },
+                label = stringResource(R.string.district),
+                placeholder = stringResource(R.string.select_district)
+            )
+        }
+
+        item {
+            DropdownField(
+                value = if (isKannada) {
+                    selectedDistrictData?.taluks?.find { it.en == uiState.taluk }?.kn ?: uiState.taluk
+                } else uiState.taluk,
+                onValueChange = { localizedTaluk ->
+                    val talukEn = selectedDistrictData?.taluks?.find { 
+                        it.en == localizedTaluk || it.kn == localizedTaluk 
+                    }?.en ?: localizedTaluk
+                    onTalukChanged(talukEn)
+                },
+                label = stringResource(R.string.taluk),
+                options = talukOptions,
+                enabled = uiState.district.isNotBlank(),
+                placeholder = if (uiState.district.isNotBlank()) stringResource(R.string.select_taluk) else stringResource(R.string.select_district_first)
+            )
+        }
+
+        item {
             InputField(
                 value = uiState.village,
                 onValueChange = onVillageChanged,
@@ -101,7 +156,11 @@ fun RegisterAnimalScreen(
                 onClick = onSubmit,
                 icon = Icons.Rounded.AddCircle,
                 height = AppDimens.primaryButtonLarge,
-                enabled = uiState.breed.isNotBlank() && uiState.village.isNotBlank() && !uiState.isSaving
+                enabled = uiState.breed.isNotBlank() && 
+                          uiState.village.isNotBlank() && 
+                          uiState.district.isNotBlank() && 
+                          uiState.taluk.isNotBlank() && 
+                          !uiState.isSaving
             )
         }
 

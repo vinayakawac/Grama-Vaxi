@@ -18,7 +18,7 @@ import com.example.grama_vaxi.data.local.entity.SyncQueueEntity
         DiseaseReportEntity::class,
         SyncQueueEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class GramaVaxiDatabase : RoomDatabase() {

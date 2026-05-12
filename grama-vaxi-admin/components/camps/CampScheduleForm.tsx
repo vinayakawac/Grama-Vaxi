@@ -29,6 +29,8 @@ const PREDEFINED_SERVICES = [
 ]
 
 const campScheduleSchema = z.object({
+  district: z.string().min(1, 'District is required'),
+  taluk: z.string().min(1, 'Taluk is required'),
   village: z.string().min(1, 'Village is required'),
   date: z.string().min(1, 'Date is required'),
   time: z.string().min(1, 'Time is required'),
@@ -45,7 +47,7 @@ interface CampScheduleFormProps {
 }
 
 export function CampScheduleForm({ onSuccess }: CampScheduleFormProps) {
-  const [villages, setVillages] = useState<string[]>([])
+  const [places, setPlaces] = useState<{districtEn: string, districtKn: string, taluks: {en: string, kn: string}[]}[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [campId, setCampId] = useState<string | null>(null)
   const [isManual, setIsManual] = useState(false)
@@ -59,6 +61,8 @@ export function CampScheduleForm({ onSuccess }: CampScheduleFormProps) {
   } = useForm<CampScheduleFormValues>({
     resolver: zodResolver(campScheduleSchema),
     defaultValues: {
+      district: '',
+      taluk: '',
       village: '',
       date: '',
       time: '',
@@ -69,6 +73,8 @@ export function CampScheduleForm({ onSuccess }: CampScheduleFormProps) {
     },
   })
 
+  const district = useWatch({ control, name: 'district' })
+  const taluk = useWatch({ control, name: 'taluk' })
   const village = useWatch({ control, name: 'village' })
   const date = useWatch({ control, name: 'date' })
   const time = useWatch({ control, name: 'time' })
@@ -79,32 +85,39 @@ export function CampScheduleForm({ onSuccess }: CampScheduleFormProps) {
 
   const finalServices = isManual ? manualService : services
 
+  const selectedDistrictData = useMemo(() => 
+    places.find(d => d.districtEn === district),
+    [district]
+  )
+
   useEffect(() => {
-    async function fetchVillages() {
+    async function fetchPlaces() {
       try {
-        const response = await fetch('/api/villages')
+        const response = await fetch('/api/places')
         if (response.ok) {
-          const uniqueVillages = await response.json()
-          setVillages(uniqueVillages)
+          const data = await response.json()
+          setPlaces(data)
         }
       } catch (error) {
-        console.error('Error fetching villages:', error)
+        console.error('Error fetching places:', error)
       }
     }
 
-    fetchVillages()
+    fetchPlaces()
   }, [])
 
   const payload = useMemo(() => ({
     type: 'camp-schedule',
     campId: campId ?? 'draft',
     village: village ?? '',
+    taluk: taluk ?? '',
+    district: district ?? '',
     date: date ?? '',
     time: time ?? '',
     location: location ?? '',
     services: finalServices ?? '',
     message: message ?? '',
-  }), [campId, village, date, time, location, finalServices, message])
+  }), [campId, village, taluk, district, date, time, location, finalServices, message])
 
   const payloadJson = JSON.stringify(payload)
 
@@ -150,23 +163,59 @@ export function CampScheduleForm({ onSuccess }: CampScheduleFormProps) {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="district">District</Label>
+                <Select 
+                  value={district}
+                  onValueChange={(value: string | null) => {
+                    setValue('district', value ?? '')
+                    setValue('taluk', '') // Reset taluk when district changes
+                  }}
+                >
+                  <SelectTrigger id="district">
+                    <SelectValue placeholder="Select district..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {places.map((p) => (
+                      <SelectItem key={p.districtEn} value={p.districtEn}>
+                        {p.districtEn} ({p.districtKn})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.district && <p className="text-xs text-destructive">{errors.district.message}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="taluk">Taluk</Label>
+                <Select 
+                  value={taluk}
+                  disabled={!district}
+                  onValueChange={(value: string | null) => setValue('taluk', value ?? '')}
+                >
+                  <SelectTrigger id="taluk">
+                    <SelectValue placeholder={district ? "Select taluk..." : "First select district"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {selectedDistrictData?.taluks.map((t) => (
+                      <SelectItem key={t.en} value={t.en}>
+                        {t.en} ({t.kn})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.taluk && <p className="text-xs text-destructive">{errors.taluk.message}</p>}
+              </div>
+            </div>
+
             <div className="space-y-2">
-              <Label htmlFor="village">Village</Label>
-              <Select 
-                value={village}
-                onValueChange={(value: string | null, _details: any) => setValue('village', value ?? '')}
-              >
-                <SelectTrigger id="village">
-                  <SelectValue placeholder="Select a village..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {villages.map((villageName) => (
-                    <SelectItem key={villageName} value={villageName}>
-                      {villageName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="village">Village name</Label>
+              <Input 
+                id="village" 
+                placeholder="Enter village name..." 
+                {...register('village')} 
+              />
               {errors.village && <p className="text-xs text-destructive">{errors.village.message}</p>}
             </div>
 

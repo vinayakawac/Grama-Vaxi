@@ -74,9 +74,9 @@
     <string name="no_qr_found">No QR code found in the selected image</string>
 
     <!-- Profile -->
-    <string name="add_contact_information">Add contact information</string>
     <string name="profile">Profile</string>
     <string name="your_profile">Your profile</string>
+    <string name="add_contact_information">Add contact information</string>
     <string name="edit_profile">Edit profile</string>
     <string name="update_name_phone_location">Update name, phone, and location</string>
     <string name="alerts_and_reminders">Alerts &amp; reminders</string>
@@ -158,6 +158,8 @@
     <string name="breed_hint">e.g., Holstein</string>
     <string name="village">Village</string>
     <string name="village_hint">e.g., Palhalli</string>
+    <string name="district">District</string>
+    <string name="taluk">Taluk</string>
     <string name="age_months">Age (Months)</string>
 
     <!-- Disease Report -->
@@ -172,5 +174,8 @@
     <string name="submit_report">Submit Report</string>
 
     <string name="not_scheduled">Not scheduled</string>
+    <string name="select_district">Select District</string>
+    <string name="select_taluk">Select Taluk</string>
+    <string name="select_district_first">Select District First</string>
     <string name="default_web_client_id">902931902318-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com</string>
 </resources>

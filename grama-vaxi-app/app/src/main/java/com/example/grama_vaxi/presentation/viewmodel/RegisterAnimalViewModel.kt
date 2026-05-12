@@ -37,6 +37,14 @@ class RegisterAnimalViewModel @Inject constructor(
         _uiState.update { it.copy(village = value) }
     }
 
+    fun onDistrictChanged(value: String) {
+        _uiState.update { it.copy(district = value, taluk = "") }
+    }
+
+    fun onTalukChanged(value: String) {
+        _uiState.update { it.copy(taluk = value) }
+    }
+
     fun onPhotoChanged(value: String?) {
         _uiState.update { it.copy(photoUri = value) }
     }
@@ -63,6 +71,8 @@ class RegisterAnimalViewModel @Inject constructor(
                 breed = state.breed,
                 ageMonths = state.ageMonths,
                 village = state.village.ifBlank { "Temple Square" },
+                district = state.district,
+                taluk = state.taluk,
                 photoUri = state.photoUri,
                 nextVaccineEpochDay = 0L // Disabled auto-scheduling as per user request
             )
@@ -96,6 +106,8 @@ data class RegisterAnimalUiState(
     val name: String = "",
     val breed: String = "",
     val village: String = "",
+    val district: String = "",
+    val taluk: String = "",
     val ageMonths: Int = 12,
     val type: AnimalType = AnimalType.COW,
     val photoUri: String? = null,

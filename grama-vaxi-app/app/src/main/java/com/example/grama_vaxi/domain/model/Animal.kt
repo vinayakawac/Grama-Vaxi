@@ -9,6 +9,8 @@ data class Animal(
     val breed: String,
     val ageMonths: Int,
     val village: String,
+    val district: String = "",
+    val taluk: String = "",
     val photoUri: String? = null,
     val nextVaccineEpochDay: Long,
     val synced: Boolean = false,

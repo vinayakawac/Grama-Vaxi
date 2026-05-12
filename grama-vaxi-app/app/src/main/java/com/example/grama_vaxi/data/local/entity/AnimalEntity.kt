@@ -13,6 +13,8 @@ data class AnimalEntity(
     val breed: String,
     val ageMonths: Int,
     val village: String,
+    val district: String,
+    val taluk: String,
     val photoUri: String?,
     val nextVaccineEpochDay: Long,
     val synced: Boolean,

@@ -1,5 +1,6 @@
 
 import { adminDb } from '@/lib/firebase/admin'
+import { KARNATAKA_PLACES } from '@/lib/constants/karnataka-places'
 
 /**
  * Fetches a list of unique villages from the animals collection.
@@ -22,4 +23,14 @@ export async function getUniqueVillages(): Promise<string[]> {
     console.error('Error fetching unique villages:', error)
     return []
   }
+}
+
+/**
+ * Returns the predefined list of Karnataka districts and taluks.
+ */
+export async function getKarnatakaPlaces() {
+  return KARNATAKA_PLACES.map(d => ({
+    ...d,
+    taluks: d.taluks.sort((a, b) => a.en.localeCompare(b.en))
+  })).sort((a, b) => a.districtEn.localeCompare(b.districtEn))
 }

@@ -147,6 +147,8 @@
     <string name="breed_hint">ಉದಾ., Holstein</string>
     <string name="village">ಗ್ರಾಮ</string>
     <string name="village_hint">ಉದಾ., ಪಾಲಹಳ್ಳಿ</string>
+    <string name="district">ಜಿಲ್ಲೆ</string>
+    <string name="taluk">ತಾಲೂಕು</string>
     <string name="age_months">ವಯಸ್ಸು (ತಿಂಗಳು)</string>
 
     <!-- Disease Report -->
@@ -161,5 +163,8 @@
     <string name="submit_report">ವರದಿ ಸಲ್ಲಿಸಿ</string>
 
     <string name="not_scheduled">ನಿಗದಿಯಾಗಿಲ್ಲ</string>
+    <string name="select_district">ಜಿಲ್ಲೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</string>
+    <string name="select_taluk">ತಾಲೂಕನ್ನು ಆಯ್ಕೆಮಾಡಿ</string>
+    <string name="select_district_first">ಮೊದಲು ಜಿಲ್ಲೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</string>
     <string name="default_web_client_id">902931902318-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com</string>
 </resources>

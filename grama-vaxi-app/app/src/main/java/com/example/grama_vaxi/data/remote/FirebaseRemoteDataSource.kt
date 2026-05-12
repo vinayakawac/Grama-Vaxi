@@ -50,6 +50,8 @@ class FirebaseRemoteDataSource @Inject constructor(
             "breed" to animal.breed,
             "ageMonths" to animal.ageMonths,
             "village" to animal.village,
+            "district" to animal.district,
+            "taluk" to animal.taluk,
             "photoUri" to animal.photoUri,
             "photoUrl" to animal.photoUri.orEmpty(),
             "nextVaccineEpochDay" to animal.nextVaccineEpochDay,

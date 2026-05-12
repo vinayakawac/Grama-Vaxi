@@ -14,13 +14,16 @@ import androidx.compose.runtime.*
 import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import com.example.grama_vaxi.R
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.grama_vaxi.data.local.constants.KarnatakaPlaces
 import com.example.grama_vaxi.presentation.components.AppDimens
+import com.example.grama_vaxi.presentation.components.DropdownField
 import com.example.grama_vaxi.presentation.viewmodel.AuthViewModel
 
 @Composable
@@ -34,8 +37,24 @@ fun SignUpScreen(
     val initialEmail = currentUser?.email ?: ""
 
     var name by remember { mutableStateOf(initialName) }
-    var location by remember { mutableStateOf("") }
+    var district by remember { mutableStateOf("") }
+    var taluk by remember { mutableStateOf("") }
+    var village by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf(initialPhone) }
+
+    val isKannada = LocalConfiguration.current.locales[0].language == "kn"
+
+    val districtOptions = remember(isKannada) {
+        KarnatakaPlaces.districts.map { if (isKannada) it.districtKn else it.districtEn }
+    }
+
+    val selectedDistrictData = remember(district) {
+        KarnatakaPlaces.districts.find { it.districtEn == district }
+    }
+
+    val talukOptions = remember(selectedDistrictData, isKannada) {
+        selectedDistrictData?.taluks?.map { if (isKannada) it.kn else it.en } ?: emptyList()
+    }
 
     Column(
         modifier = Modifier
@@ -76,12 +95,48 @@ fun SignUpScreen(
             shape = RoundedCornerShape(AppDimens.radiusLarge)
         )
 
-        // Location Field
+        // District Field
+        DropdownField(
+            value = if (isKannada) {
+                selectedDistrictData?.districtKn ?: district
+            } else district,
+            onValueChange = { localizedDistrict ->
+                val districtEn = KarnatakaPlaces.districts.find { 
+                    it.districtEn == localizedDistrict || it.districtKn == localizedDistrict 
+                }?.districtEn ?: localizedDistrict
+                district = districtEn
+                taluk = "" // Reset taluk
+            },
+            label = stringResource(R.string.district),
+            options = districtOptions,
+            placeholder = stringResource(R.string.select_district),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        // Taluk Field
+        DropdownField(
+            value = if (isKannada) {
+                selectedDistrictData?.taluks?.find { it.en == taluk }?.kn ?: taluk
+            } else taluk,
+            onValueChange = { localizedTaluk ->
+                val talukEn = selectedDistrictData?.taluks?.find { 
+                    it.en == localizedTaluk || it.kn == localizedTaluk 
+                }?.en ?: localizedTaluk
+                taluk = talukEn
+            },
+            label = stringResource(R.string.taluk),
+            options = talukOptions,
+            enabled = district.isNotBlank(),
+            placeholder = if (district.isNotBlank()) stringResource(R.string.select_taluk) else stringResource(R.string.select_district_first),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        // Village Field
         OutlinedTextField(
-            value = location,
-            onValueChange = { location = it },
+            value = village,
+            onValueChange = { village = it },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.village_location)) },
+            label = { Text(stringResource(R.string.village)) },
             leadingIcon = { Icon(Icons.Rounded.LocationOn, contentDescription = null) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
@@ -113,7 +168,7 @@ fun SignUpScreen(
             onClick = {
                 authViewModel.updateProfile(
                     userName = name,
-                    location = location,
+                    location = village, // Use village name as primary location for matching
                     email = initialEmail,
                     phoneNumber = phone,
                     age = "", // Default empty as per requirement
@@ -125,7 +180,7 @@ fun SignUpScreen(
                 .fillMaxWidth()
                 .height(AppDimens.minTouch),
             shape = RoundedCornerShape(AppDimens.radiusLarge),
-            enabled = name.isNotBlank() && location.isNotBlank()
+            enabled = name.isNotBlank() && village.isNotBlank() && district.isNotBlank() && taluk.isNotBlank()
         ) {
             Text(stringResource(R.string.complete_registration))
         }

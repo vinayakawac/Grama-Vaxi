@@ -213,6 +213,8 @@ fun GramaVaxiNavHost(authViewModel: AuthViewModel) {
                     uiState = uiState,
                     onNameChanged = viewModel::onNameChanged,
                     onBreedChanged = viewModel::onBreedChanged,
+                    onDistrictChanged = viewModel::onDistrictChanged,
+                    onTalukChanged = viewModel::onTalukChanged,
                     onVillageChanged = viewModel::onVillageChanged,
                     onAgeChanged = viewModel::onAgeChanged,
                     onTypeChanged = viewModel::onTypeChanged,
